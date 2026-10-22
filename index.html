@@ -212,7 +212,7 @@ img{max-width:100%}
         <label class="f wide">Beslenme durumunda bozulma<select id="n_nut">
           <option value="0">0 · Normal beslenme durumu</option>
           <option value="1">1 · Hafif: 3 ayda &gt;%5 kilo kaybı veya son hafta alım gereksinimin %50–75’i</option>
-          <option value="2" selected>2 · Orta: 2 ayda &gt;%5 kayıp veya BMI 18,5–20,5 + genel durum bozuk veya alım %25–50</option>
+          <option value="2" selected>2 · Orta: 2 ayda &gt;%5 kayıp veya BMI 18,5–20,5 + genel durum bozuk veya alım %25–60</option>
           <option value="3">3 · Ağır: 1 ayda &gt;%5 (3 ayda &gt;%15) kayıp veya BMI &lt;18,5 + genel durum bozuk veya alım %0–25</option></select></label>
         <label class="f wide">Hastalık şiddeti (stres)<select id="n_sev">
           <option value="0">0 · Normal gereksinim</option>
@@ -393,7 +393,7 @@ img{max-width:100%}
   <ul class="recs hits" id="araList"></ul>
 </section>
 
-<footer class="disc">Bu uygulama ESPEN kılavuzlarının (NotebookLM “Klinik Beslenme Rehberi” defterindeki 13 kaynak) özetidir; klinik karar desteği sağlar, bireysel değerlendirmenin ve kurum protokollerinin yerini almaz. Öneri dereceleri kılavuzdaki haliyle verilmiştir; doğrulanamayan derecelerde “—” kullanılmıştır. <span class="offl" id="offl"></span> · Sürüm 1.2 (Ekim 2026)</footer>
+<footer class="disc">Bu uygulama ESPEN kılavuzlarının (NotebookLM “Klinik Beslenme Rehberi” defterindeki 13 kaynak) özetidir; klinik karar desteği sağlar, bireysel değerlendirmenin ve kurum protokollerinin yerini almaz. Öneri dereceleri kılavuzdaki haliyle verilmiştir; doğrulanamayan derecelerde “—” kullanılmıştır. <span class="offl" id="offl"></span> · Sürüm 1.3 (Ekim 2026)</footer>
 </main>
 </div>
 
@@ -630,7 +630,7 @@ sec:[
 ['Eser elementler izlenmeli ve desteklenmeli; selenyum, çinko ve bakıra özel dikkat.','B','ren'],
 ['Suda çözünen vitaminler izlenmeli ve desteklenmeli; C vitamini, folat ve tiamine özel dikkat.','B','ren'],
 ['CRRT efluentiyle günlük kayıp: C vitamini ≈68 mg, folat ≈0,3 mg, tiamin ≈4 mg. C vitamini için 100 mg/gün önerilmiştir. CRRT &gt;2 hafta sürerse kan bakırı ölçülmeli; ≈3 mg/gün IV bakır önerilmiştir.','UI','ren'],
-['Standart PN dozları (selenyum 75 µg, çinko 50 mg/gün’e kadar) HD hastasında düzeyleri normalleştirmeyebilir.','UI','ren']]},
+['Kronik HD hastalarında orta düzey oral destek (selenyum 75 µg, çinko 50 mg/gün’e kadar) serum düzeylerini normalleştirmemiştir; gereksinim artmıştır.','UI','ren']]},
 {h:'Formül ve özel besinler',r:[
 ['Renal hastalığa özgü EN/PN formülü her hastada rutin kullanılmamalı; bireyselleştirilmeli.','B','ren'],
 ['Formül, en doğru dozlama için kalori/protein oranına göre seçilmeli.','B','ren'],
@@ -651,7 +651,7 @@ tbl:{h:'Hızlı hedefler',head:['Durum','Enerji (kcal/kg/gün)','Protein (g/kg/g
 ['Siroz, malnütre/sarkopenik','30–35 (B)','1,5 (B)'],
 ['Obez siroz','Artırılmaz (GPP)','—'],
 ['Obez NASH/siroz + akut hastalık (EN/PN)','25 / ideal ağırlık (GPP)','2,0–2,5 / ideal ağırlık'],
-['Ağır alkolik hepatit','35–40','1,2–1,5'],
+['Ağır alkolik hepatit','30–35 (GPP)','1,2–1,5'],
 ['Karaciğer nakli/cerrahi (pre ve postop)','30–35 (GPP)','1,2–1,5'],
 ['Protein intoleransı','—','Bitkisel protein veya BCAA 0,25 g/kg (B)']]},
 sec:[
@@ -685,7 +685,7 @@ sec:[
 ['Standart enteral formül kullanılabilir.','GPP','liv'],
 ['Oral/EN ile yeterli beslenemeyende ikinci basamak PN.','GPP','liv']]},
 {h:'Ağır alkolik hepatit (ASH)',r:[
-['Hedef: 35–40 kcal/kg/gün ve 1,2–1,5 g protein/kg/gün.','UI','liv'],
+['Alımı artırmak için bireyselleştirilmiş beslenme danışmanlığı; hedef 30–35 kcal/kg/gün ve 1,2–1,5 g protein/kg/gün. Alım &lt;21,5 kcal/kg/gün mortalite artışıyla ilişkilidir.','GPP','liv'],
 ['Oral alım yetersizse ONS birinci basamak; geç akşam veya gece takviyesi şeklinde.','GPP','liv'],
 ['Normal gıda ve/veya ONS ile kalori gereksinimini karşılayamayan ağır ASH’de sağkalım ve enfeksiyon için EN.','B','liv'],
 ['Standart, tercihen yüksek enerji yoğunluklu (≥1,5 kcal/mL) formül.','GPP','liv'],
@@ -1068,7 +1068,7 @@ const SET=[
 {g:'Karaciğer',id:'cir',l:'Siroz, malnütrisyon yok',e:[30,35],eTxt:'1,3 × REE (sedanter; B)',p:[1.2,1.2],pTxt:'1,2 (B)',b:'dry',s:'liv',n:['Geç akşam atıştırmalığı ve 3–5 öğün (B).','Obez sirozda enerji artırılmaz (GPP).']},
 {g:'Karaciğer',id:'cirm',l:'Siroz, malnütre/sarkopenik',e:[30,35],eTxt:'30–35 (B)',p:[1.5,1.5],pTxt:'1,5 (B)',b:'dry',s:'liv',n:['Hepatik ensefalopatide protein kısıtlanmaz (B).','Protein intoleransında bitkisel protein veya BCAA 0,25 g/kg (B).']},
 {g:'Karaciğer',id:'cirob',l:'Obez siroz/NASH + akut hastalık',e:[25,25],eTxt:'25 kcal/kg ideal (GPP)',p:[2.0,2.5],pTxt:'2,0–2,5 g/kg ideal',b:'ibw',s:'liv',n:['Uzlaşı düzeyi sınırlı (%71).']},
-{g:'Karaciğer',id:'ash',l:'Ağır alkolik hepatit',e:[35,40],p:[1.2,1.5],b:'dry',s:'liv',n:['>12 saat açlıkta 2–3 g/kg/gün IV glukoz; >72 saat tam PN (GPP).','PN/glukozdan önce tiamin.']},
+{g:'Karaciğer',id:'ash',l:'Ağır alkolik hepatit',e:[30,35],eTxt:'30–35 (GPP)',p:[1.2,1.5],b:'dry',s:'liv',n:['>12 saat açlıkta 2–3 g/kg/gün IV glukoz; >72 saat tam PN (GPP).','PN/glukozdan önce tiamin.']},
 {g:'Karaciğer',id:'ltx',l:'Karaciğer nakli / cerrahi',e:[30,35],eTxt:'pre ve akut dönem sonrası postop (GPP)',p:[1.2,1.5],b:'dry',s:'liv',n:['Obez adayda 25 kcal/kg ve 2,0–2,5 g/kg ideal ağırlık.']},
 {g:'Diğer',id:'ibda',l:'IBH · aktif hastalık',e:[25,30],eTxt:'sağlıklıya benzer; kılavuz sayı vermez',p:[1.2,1.5],pTxt:'1,2–1,5 (GPP)',b:'actual',s:'ibd',n:['Zor olguda IC + aktivite değerlendirmesi.']},
 {g:'Diğer',id:'ibdr',l:'IBH · remisyon',e:[25,30],eTxt:'sağlıklıya benzer; kılavuz sayı vermez',p:[1.0,1.0],pTxt:'≈1,0 (GPP)',b:'actual',s:'ibd',n:[]},
@@ -1116,7 +1116,7 @@ function renderPred(p){
   $('#tPred').innerHTML=`<thead><tr><th>Denklem</th><th>REE (kcal/gün)</th><th>Formül</th></tr></thead><tbody>
   <tr><td>Harris-Benedict (1919)</td><td>${fmt(hb,0)}</td><td>${p.sex==='E'?'66,47 + 13,75A + 5,003B − 6,755Y':'655,1 + 9,563A + 1,850B − 4,676Y'}</td></tr>
   <tr><td>Mifflin-St Jeor</td><td>${fmt(mi,0)}</td><td>10A + 6,25B − 5Y ${p.sex==='E'?'+ 5':'− 161'}</td></tr>
-  <tr><td>Ağırlık temelli (20 / 25 kcal/kg)</td><td>${fmt(20*p.w,0)} / ${fmt(25*p.w,0)}</td><td>A = aktüel ağırlık</td></tr></tbody>`;
+  <tr><td>Ağırlık temelli (20 / 25 kcal/kg)</td><td>${fmt(20*p.w,0)} / ${fmt(25*p.w,0)}</td><td>A: aktüel ağırlık (kg) · B: boy (cm) · Y: yaş (yıl)</td></tr></tbody>`;
 }
 
 /* ================= EN ================= */
@@ -1204,7 +1204,7 @@ function renderRF(){
   ${isFinite(tgt)?`<div class="prow"><span>Hesaplanan hedef</span><span class="v">${fmt(tgt,0)} kcal</span></div>`:''}
   <div class="prow"><b>Tiamin</b><span class="v">${kpk?'beslenmeden önce':'risk varsa'}</span></div>
   <div class="pnote"><ul>
-  <li>Tiamin: 200–300 mg/gün (PN 2009) · acil/YBÜ yatışında 100–300 mg/gün IV (Mikrobesin 2022); risk altında 100 mg × 3 IV. B kompleks ile.</li>
+  <li>Tiamin: 200–300 mg/gün oral (NICE CG32) · acil/YBÜ yatışında 100–300 mg/gün IV (Mikrobesin 2022); risk altında 100 mg × 3 IV. B kompleks ile.</li>
   <li>İlk hafta K, Mg, P en az günde bir (YBÜ, GPP); malnütre yaşlıda ilk 3 gün P, Mg, K, tiamin hafif eksiklikte bile replase edilir (GPP).</li>
   <li>P &lt;0,65 mmol/L veya &gt;0,16 mmol/L düşüş: günde 2–3 ölçüm, replasman ve enerjiyi 48 saat kısıtla (B).</li>
   <li>İlk günlerde sıvı ve sodyum yükünden kaçının; glukoz infüzyonu akut su/sodyum retansiyonu yapabilir.</li></ul></div>`;
