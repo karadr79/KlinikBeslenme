@@ -1,10 +1,10 @@
 /* Klinik Beslenme Rehberi — service worker */
-const CACHE = 'kbr-v1.4';
+const CACHE = 'kbr-v1.5';
 const CORE = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE.map(u => new Request(u, {cache: 'reload'})))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
@@ -21,7 +21,7 @@ self.addEventListener('fetch', e => {
   if (url.origin !== location.origin) return;
   // Sayfa: önce ağ (güncelleme gelsin), yoksa önbellek
   if (req.mode === 'navigate') {
-    e.respondWith(fetch(req).then(res => { const cp = res.clone(); caches.open(CACHE).then(c => c.put('./index.html', cp)); return res; })
+    e.respondWith(fetch(req.url, {cache: 'no-store'}).then(res => { const cp = res.clone(); caches.open(CACHE).then(c => c.put('./index.html', cp)); return res; })
       .catch(() => caches.match('./index.html')));
     return;
   }

@@ -474,7 +474,7 @@ img{max-width:100%}
 </section>
 
 <nav class="pager" id="pager" aria-label="Önceki ve sonraki bölüm"></nav>
-<footer class="disc">Bu uygulama ESPEN kılavuzlarının (NotebookLM “Klinik Beslenme Rehberi” defterindeki 13 kaynak) özetidir; klinik karar desteği sağlar, bireysel değerlendirmenin ve kurum protokollerinin yerini almaz. Öneri dereceleri kılavuzdaki haliyle verilmiştir; doğrulanamayan derecelerde “—” kullanılmıştır. <span class="offl" id="offl"></span> · Sürüm 1.4 (Ekim 2026)</footer>
+<footer class="disc">Bu uygulama ESPEN kılavuzlarının (NotebookLM “Klinik Beslenme Rehberi” defterindeki 13 kaynak) özetidir; klinik karar desteği sağlar, bireysel değerlendirmenin ve kurum protokollerinin yerini almaz. Öneri dereceleri kılavuzdaki haliyle verilmiştir; doğrulanamayan derecelerde “—” kullanılmıştır. <span class="offl" id="offl"></span> · Sürüm 1.5 (Ekim 2026)</footer>
 </main>
 </div>
 
@@ -1389,7 +1389,15 @@ if(!importFromHash())show(location.hash.slice(1)||'anasayfa');
 
 <script>
 (function(){
-  if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(){var o=document.getElementById('offl');if(o)o.textContent='Çevrimdışı kullanıma hazır';}).catch(function(){});});}
+  if('serviceWorker' in navigator){
+    var had=!!navigator.serviceWorker.controller, reloaded=false;
+    navigator.serviceWorker.addEventListener('controllerchange',function(){if(had&&!reloaded){reloaded=true;location.reload();}});
+    window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(reg){
+      var o=document.getElementById('offl');if(o)o.textContent='Çevrimdışı kullanıma hazır';
+      reg.update();
+      document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')reg.update();});
+    }).catch(function(){});});
+  }
   var dp=null,btn=document.getElementById('instBtn');
   window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;btn.classList.add('on');});
   btn.addEventListener('click',function(){if(!dp)return;dp.prompt();dp.userChoice.finally(function(){dp=null;btn.classList.remove('on');});});
