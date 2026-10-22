@@ -16,6 +16,6 @@ ESPEN kılavuzlarına dayalı erişkin klinik beslenme hesaplayıcıları ve ön
 İlk açılıştan sonra internet olmadan çalışır.
 
 ## Güncelleme
-index.html değiştiğinde `sw.js` içindeki `CACHE = 'kbr-v1.1'` değerini artırın (örn. `kbr-v1.1`); cihazlar bir sonraki açılışta yeni sürümü alır.
+index.html değiştiğinde `sw.js` içindeki `CACHE = 'kbr-v1.2'` değerini artırın (örn. `kbr-v1.1`); cihazlar bir sonraki açılışta yeni sürümü alır.
 
 Kaynak: NotebookLM “Klinik Beslenme Rehberi” defteri (13 ESPEN kılavuzu). Klinik karar desteğidir; bireysel değerlendirmenin yerini almaz.

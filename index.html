@@ -184,7 +184,7 @@ img{max-width:100%}
   </div>
   <div class="sec"><h2>Referans ağırlık seçimi</h2>
     <ul class="recs">
-      <li><span class="g g-GPP">GPP</span><p>Obez kritik hastada IC yoksa enerji <b>düzeltilmiş ağırlık</b> üzerinden; protein 1,3 g/kg düzeltilmiş ağırlık. İdeal ağırlık ≈ 0,9 × boy(cm) − 100 (erkek) / − 106 (kadın); düzeltilmiş = ideal + (aktüel − ideal) × 0,20–0,25. BMI &gt;25 kg/m² olduğunda referans aktüelden ideale kayar.<span class="s">ESPEN YBÜ 2023</span></p></li>
+      <li><span class="g g-GPP">GPP</span><p>Obez kritik hastada IC yoksa enerji <b>düzeltilmiş ağırlık</b> üzerinden; protein 1,3 g/kg düzeltilmiş ağırlık. İdeal ağırlık ≈ 0,9 × (boy[cm] − 100) erkekte, 0,9 × (boy[cm] − 106) kadında (kılavuz metninde parantezsiz yazılmıştır; klinik olarak anlamlı okuma budur); düzeltilmiş = ideal + (aktüel − ideal) × 0,20–0,25. BMI &gt;25 kg/m² olduğunda referans aktüelden ideale kayar.<span class="s">ESPEN YBÜ 2023</span></p></li>
       <li><span class="g g-0">0</span><p>Böbrek hastalığında protein reçetesi için mümkünse <b>yatış öncesi/olağan ağırlık</b> kullanılır; sıvı yükü nedeniyle aktüel ağırlık kullanılmamalıdır.<span class="s">ESPEN Böbrek 2021, Öneri 18</span></p></li>
       <li><span class="g g-UI">—</span><p>Asitli sirozda enerji hesabı için boya göre ideal ağırlık veya ödemden arındırılmış (kuru) ağırlık kullanılır. Bu sayfadaki %5/%10/%15 (+%5 ödem) pratik düzeltmesi EASL 2019 beslenme kılavuzundaki yaygın yaklaşımdır; ESPEN 2020 metni yüzde vermez.<span class="s">ESPEN Karaciğer 2020 · düzeltme oranları defter dışı</span></p></li>
       <li><span class="g g-0">0</span><p>Polimorbid hastada ağırlık temelli hedefler <b>aktüel ağırlık</b> üzerinden tanımlanmıştır (≥65 yaş ≈27 kcal/kg; ağır düşük kiloluda ≈30 kcal/kg).<span class="s">ESPEN Polimorbid 2023</span></p></li>
@@ -393,7 +393,7 @@ img{max-width:100%}
   <ul class="recs hits" id="araList"></ul>
 </section>
 
-<footer class="disc">Bu uygulama ESPEN kılavuzlarının (NotebookLM “Klinik Beslenme Rehberi” defterindeki 13 kaynak) özetidir; klinik karar desteği sağlar, bireysel değerlendirmenin ve kurum protokollerinin yerini almaz. Öneri dereceleri kılavuzdaki haliyle verilmiştir; doğrulanamayan derecelerde “—” kullanılmıştır. <span class="offl" id="offl"></span> · Sürüm 1.1 (Ekim 2026)</footer>
+<footer class="disc">Bu uygulama ESPEN kılavuzlarının (NotebookLM “Klinik Beslenme Rehberi” defterindeki 13 kaynak) özetidir; klinik karar desteği sağlar, bireysel değerlendirmenin ve kurum protokollerinin yerini almaz. Öneri dereceleri kılavuzdaki haliyle verilmiştir; doğrulanamayan derecelerde “—” kullanılmıştır. <span class="offl" id="offl"></span> · Sürüm 1.2 (Ekim 2026)</footer>
 </main>
 </div>
 
@@ -973,7 +973,7 @@ const PF=['p_age','p_sex','p_h','p_w','p_u','p_abwf','p_asc','p_ed'];
 function P(){
   const age=num('p_age'),sex=$('#p_sex').value,h=num('p_h'),w=num('p_w'),u=num('p_u'),f=parseFloat($('#p_abwf').value),asc=parseFloat($('#p_asc').value),ed=parseFloat($('#p_ed').value);
   const bmi=w/Math.pow(h/100,2);
-  const ibw=0.9*h-(sex==='E'?100:106);
+  const ibw=0.9*(h-(sex==='E'?100:106));
   const abw=w>ibw?ibw+(w-ibw)*f:w;
   const dry=w*(1-(asc+ed)/100);
   const wl=isFinite(u)&&u>0?(u-w)/u*100:NaN;
@@ -993,7 +993,7 @@ function renderProfile(){
   <div class="prow"><b>Kuru</b><span class="v">${fmt(p.dry,1)} kg</span></div>
   <div class="prow thick"><b>Olağan</b><span class="v">${isFinite(p.u)?fmt(p.u,1)+' kg':'—'}</span></div>
   <div class="prow"><span>Kilo kaybı</span><span class="v">${isFinite(p.wl)?fmt(p.wl,1)+' %':'—'}</span></div>
-  <div class="pnote">İdeal = 0,9 × boy − ${p.sex==='E'?100:106}. Düzeltilmiş = ideal + (aktüel − ideal) × ${fmt(p.f,2)}${p.w<=p.ibw?' (aktüel ≤ ideal: aktüel kullanılır)':''}. Kuru = aktüel × (1 − %${p.asc+p.ed}).</div>`;
+  <div class="pnote">İdeal = 0,9 × (boy − ${p.sex==='E'?100:106}). Düzeltilmiş = ideal + (aktüel − ideal) × ${fmt(p.f,2)}${p.w<=p.ibw?' (aktüel ≤ ideal: aktüel kullanılır)':''}. Kuru = aktüel × (1 − %${p.asc+p.ed}).</div>`;
   $('#ptChip').innerHTML=`Hasta: <b>${fmt(p.w,1)} kg</b> · ${fmt(p.h,0)} cm · BMI <b>${fmt(p.bmi,1)}</b> · ${fmt(p.age,0)} y`;
   const o={};PF.forEach(id=>o[id]=document.getElementById(id).value);store('kbr_profile',o);
 }
