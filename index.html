@@ -141,6 +141,76 @@ mark{background:var(--warn-soft);color:var(--ink);padding:0 1px}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 
+/* ===== Tema v2 ===== */
+:root{--hdr:#12442F;--hdr-ink:#EEF4F0;--hdr-mute:#A9C4B5;
+ --c1:#1D6A4D;--c2:#2A5D8C;--c3:#8A3F6E;--c4:#86640E;--c5:#58645D;--cur:var(--accent);
+ --shadow:0 1px 2px rgba(20,30,25,.06),0 6px 18px -10px rgba(20,30,25,.28)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--hdr:#0C1D16;--hdr-ink:#E6EEE9;--hdr-mute:#8FA99B;--c1:#62C499;--c2:#83B4E3;--c3:#DA9CC6;--c4:#DDB85C;--c5:#9BA69F;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 20px -12px rgba(0,0,0,.7)}}
+:root[data-theme="dark"]{--hdr:#0C1D16;--hdr-ink:#E6EEE9;--hdr-mute:#8FA99B;--c1:#62C499;--c2:#83B4E3;--c3:#DA9CC6;--c4:#DDB85C;--c5:#9BA69F;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 20px -12px rgba(0,0,0,.7)}
+body::before{background:var(--hdr)}
+.top{background:var(--hdr);color:var(--hdr-ink);border-bottom:0;box-shadow:0 3px 0 var(--cur)}
+.mark{border-color:var(--hdr-ink);color:var(--hdr-ink)}
+.brand small{color:var(--hdr-mute)}
+.ptchip{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);color:var(--hdr-mute)}
+.ptchip b{color:var(--hdr-ink)}
+.search input{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22);color:var(--hdr-ink)}
+.search input::placeholder{color:var(--hdr-mute)}
+.search input:focus{border-color:var(--hdr-ink);background:rgba(255,255,255,.16)}
+.gc1{--gc:var(--c1)}.gc2{--gc:var(--c2)}.gc3{--gc:var(--c3)}.gc4{--gc:var(--c4)}.gc5{--gc:var(--c5)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:3px;background:var(--gc);flex:none}
+nav.idx{background:var(--surface);padding-top:20px}
+nav.idx h4{display:flex;align-items:center;gap:8px;color:var(--gc)}
+nav.idx a{margin:1px 0;color:var(--ink)}
+nav.idx a:hover{background:color-mix(in srgb,var(--gc,var(--accent)) 10%,transparent)}
+nav.idx a[aria-current="page"]{background:color-mix(in srgb,var(--gc,var(--accent)) 16%,var(--surface));color:var(--ink);font-weight:700;box-shadow:inset 3px 0 0 var(--gc,var(--accent))}
+nav.idx a.home{font-weight:800;font-family:var(--f-display);font-stretch:85%;font-size:16px;margin-bottom:6px}
+.eyebrow{color:var(--cur)}
+.mod-h{border-bottom:2px solid var(--ink)}
+.calc>.fields,.calc>div:first-child{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+.calc>div:first-child fieldset{background:var(--paper)}
+.panel{box-shadow:var(--shadow)}
+.sec h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--cur);flex:none;align-self:center}
+.b{font:inherit;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:8px;border:1.5px solid var(--ink);background:var(--surface);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-block}
+.b.pri{background:var(--ink);color:var(--paper)}
+.hero{padding:6px 0 22px;border-bottom:2px solid var(--ink);margin-bottom:22px}
+.hero h1{font-weight:900;font-stretch:72%;font-size:clamp(38px,7vw,64px);line-height:.95;letter-spacing:-.01em;margin:4px 0 10px;text-wrap:balance}
+.hero .btns{margin-top:16px}
+.tgroup{margin-bottom:22px}
+.tgroup h3{display:flex;align-items:center;gap:8px;font-weight:800;font-stretch:85%;font-size:17px;margin-bottom:10px}
+.tgroup h3 small{font-family:var(--f-body);font-weight:500;font-size:12px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.tile{display:flex;flex-direction:column;gap:3px;text-decoration:none;color:var(--ink);background:color-mix(in srgb,var(--gc) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--gc) 30%,var(--line));border-radius:12px;padding:12px 14px;min-width:0;transition:transform .12s,box-shadow .12s}
+.tile:hover{transform:translateY(-1px);box-shadow:var(--shadow);border-color:var(--gc)}
+.tile .tk{font-family:var(--f-display);font-stretch:75%;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gc)}
+.tile b{font-family:var(--f-display);font-weight:800;font-stretch:85%;font-size:17px;line-height:1.15}
+.tile .td{font-size:12.5px;color:var(--muted);line-height:1.4}
+.tile[aria-current="page"]{border:2px solid var(--gc);box-shadow:var(--shadow)}
+.secbar{display:none}
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:32px;max-width:1040px}
+.pager a{display:flex;flex-direction:column;gap:2px;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--surface);min-width:0}
+.pager a:hover{border-color:var(--cur)}
+.pager a.nx{text-align:right;grid-column:2}
+.pager small{color:var(--muted);font-size:12px}
+.pager b{font-family:var(--f-display);font-stretch:85%;font-weight:800;font-size:15px}
+.sheet{position:fixed;inset:0;z-index:30;background:rgba(10,18,14,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet-in{background:var(--paper);width:100%;max-width:760px;max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-shadow:0 -10px 30px rgba(0,0,0,.25)}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;position:sticky;top:-14px;background:var(--paper);padding:8px 0 12px;margin-bottom:6px;z-index:1}
+.sheet-h h2{font-weight:900;font-stretch:75%;font-size:28px}
+@media (max-width:900px){
+ .top{position:static}
+ main{padding-top:0}
+ .secbar{display:block;position:sticky;top:env(safe-area-inset-top,0px);z-index:8;margin:0 calc(-1 * max(16px,env(safe-area-inset-right,0px))) 18px calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+ #secBtn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;font:inherit;text-align:left;cursor:pointer;background:var(--surface);color:var(--ink);border:2px solid var(--cur);border-radius:12px;padding:9px 9px 9px 14px;box-shadow:var(--shadow)}
+ .sb-t{display:flex;flex-direction:column;min-width:0}
+ .sb-t small{font-family:var(--f-display);font-stretch:75%;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--cur)}
+ .sb-t b{font-family:var(--f-display);font-weight:800;font-stretch:85%;font-size:19px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .sb-all{display:inline-flex;align-items:center;gap:6px;flex:none;background:var(--cur);color:var(--surface);font-weight:700;font-size:13px;padding:8px 11px;border-radius:9px}
+ .tiles{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+ .sheet .tiles{grid-template-columns:1fr 1fr}
+ .tile b{font-size:15.5px}
+}
+@media (prefers-reduced-motion: reduce){.tile{transition:none}}
+
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 [hidden]{display:none!important}
 img{max-width:100%}
@@ -163,7 +233,17 @@ img{max-width:100%}
 <div class="shell">
 <nav class="idx" id="nav" aria-label="Bölümler"></nav>
 <main id="main">
-<label class="mobnav">Bölüm<select id="navSel"></select></label>
+<div class="secbar"><button type="button" id="secBtn" aria-haspopup="dialog"><span class="sb-t"><small id="secGrp">Başlangıç</small><b id="secTitle">Ana sayfa</b></span><span class="sb-all"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor"/></svg>Bölümler</span></button></div>
+
+<section class="mod home" data-mod="anasayfa" hidden>
+  <header class="hero">
+    <p class="eyebrow">ESPEN kılavuzları · erişkin</p>
+    <h1>Klinik Beslenme Rehberi</h1>
+    <p class="lede">Tarama, enerji-protein hedefi, enteral ve parenteral reçete, refeeding ve organ yetmezliklerinde beslenme. 7 hesaplayıcı ve 13 rehber bölümü; öneriler kılavuzdaki dereceleriyle birlikte.</p>
+    <div class="btns"><a class="b pri" href="#gereksinim">Gereksinimi hesapla</a><a class="b" href="#profil">Hasta profilini gir</a></div>
+  </header>
+  <div id="homeTiles"></div>
+</section>
 
 <!-- ============ PROFİL ============ -->
 <section class="mod" data-mod="profil" hidden>
@@ -393,9 +473,12 @@ img{max-width:100%}
   <ul class="recs hits" id="araList"></ul>
 </section>
 
-<footer class="disc">Bu uygulama ESPEN kılavuzlarının (NotebookLM “Klinik Beslenme Rehberi” defterindeki 13 kaynak) özetidir; klinik karar desteği sağlar, bireysel değerlendirmenin ve kurum protokollerinin yerini almaz. Öneri dereceleri kılavuzdaki haliyle verilmiştir; doğrulanamayan derecelerde “—” kullanılmıştır. <span class="offl" id="offl"></span> · Sürüm 1.3 (Ekim 2026)</footer>
+<nav class="pager" id="pager" aria-label="Önceki ve sonraki bölüm"></nav>
+<footer class="disc">Bu uygulama ESPEN kılavuzlarının (NotebookLM “Klinik Beslenme Rehberi” defterindeki 13 kaynak) özetidir; klinik karar desteği sağlar, bireysel değerlendirmenin ve kurum protokollerinin yerini almaz. Öneri dereceleri kılavuzdaki haliyle verilmiştir; doğrulanamayan derecelerde “—” kullanılmıştır. <span class="offl" id="offl"></span> · Sürüm 1.4 (Ekim 2026)</footer>
 </main>
 </div>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetH"><div class="sheet-in"><div class="sheet-h"><h2 id="sheetH">Bölümler</h2><button type="button" class="b" id="sheetX">Kapat</button></div><div id="sheetTiles"></div></div></div>
 
 <script>
 (function(){
@@ -910,9 +993,16 @@ sec:[
 M.kaynaklar={e:'Başvuru',t:'Kılavuzlar ve öneri dereceleri',lede:'Uygulamanın dayandığı 13 kaynak (NotebookLM “Klinik Beslenme Rehberi” defteri).',src:[],custom:true};
 
 /* ================= NAV ================= */
-const TITLES={profil:'Hasta profili',tarama:'Tarama skorları',gereksinim:'Enerji ve protein',['en-plan']:'EN planı',['pn-analiz']:'PN analizi',refeeding:'Refeeding riski',nonnut:'Non-nütrisyonel kalori',
+const TITLES={anasayfa:'Ana sayfa',profil:'Hasta profili',tarama:'Tarama skorları',gereksinim:'Enerji ve protein',['en-plan']:'EN planı',['pn-analiz']:'PN analizi',refeeding:'Refeeding riski',nonnut:'Non-nütrisyonel kalori',
 ayaktan:'Ayaktan ve taburculuk',yatan:'Yatan polimorbid',geriatri:'Geriatri',kritik:'Kritik hasta',cerrahi:'Cerrahi',bobrek:'Böbrek (ABH, KBH, RRT)',karaciger:'Karaciğer',ibh:'İnflamatuvar barsak',kanser:'Kanser',kbs:'Kısa barsak ve ev PN',enteral:'Enteral beslenme',parenteral:'Parenteral beslenme',mikro:'Mikrobesinler',kaynaklar:'Kılavuzlar'};
-const GROUPS=[['Hesaplayıcılar',['gereksinim','profil','tarama','en-plan','pn-analiz','refeeding','nonnut']],['Klinik ortam',['ayaktan','yatan','geriatri','kritik','cerrahi']],['Organ ve hastalık',['bobrek','karaciger','ibh','kanser','kbs']],['Destek yolları',['enteral','parenteral','mikro']],['Başvuru',['kaynaklar']]];
+const GROUPS=[['Hesaplayıcılar',['gereksinim','profil','tarama','en-plan','pn-analiz','refeeding','nonnut'],1],['Klinik ortam',['ayaktan','yatan','geriatri','kritik','cerrahi'],2],['Organ ve hastalık',['bobrek','karaciger','ibh','kanser','kbs'],3],['Destek yolları',['enteral','parenteral','mikro'],4],['Başvuru',['kaynaklar'],5]];
+const DESC={gereksinim:'Klinik duruma göre enerji ve protein hedefi',profil:'BMI, ideal, düzeltilmiş ve kuru ağırlık',tarama:'NRS-2002, GLIM, MNA-SF',['en-plan']:'Hız, hacim ve kademeli artış takvimi',['pn-analiz']:'GIR, substrat dozları, osmolarite',refeeding:'NICE riski, başlangıç kalorisi, tiamin',nonnut:'Propofol, sitrat, dekstroz, PD glukozu',
+ayaktan:'Taburculuk sonrası destek, ONS, ayaktan hedefler',yatan:'Polimorbid hastada tarama ve hedefler',geriatri:'Yaşlıda beslenme, disfaji, hidrasyon',kritik:'Faz bazlı hedefler, EN/PN zamanlaması',cerrahi:'ERAS, preop destek, postop erken beslenme',
+bobrek:'ABH, KBH, RRT ve protein tablosu',karaciger:'Siroz, ALF, alkolik hepatit, MASLD, nakil',ibh:'Crohn, ülseratif kolit, mikrobesinler',kanser:'Gereksinim, kaşeksi, onkolojik tedavi',kbs:'KBS tipleri, ORS, ilaçlar, evde PN',
+enteral:'Endikasyon, tüp, formül, uygulama',parenteral:'Damar yolu, substrat sınırları, izlem',mikro:'PN/EN dozları, tiamin, CRP etkisi',kaynaklar:'13 kılavuz ve öneri dereceleri'};
+const GROUP_OF={};GROUPS.forEach(g=>g[1].forEach(id=>GROUP_OF[id]=g));
+const ORDER=GROUPS.flatMap(g=>g[1]);
+function tilesHTML(cur){return GROUPS.map(g=>`<div class="tgroup gc${g[2]}"><h3><span class="dot"></span>${g[0]}<small>${g[1].length} bölüm</small></h3><div class="tiles">${g[1].map(id=>`<a class="tile gc${g[2]}" href="#${id}" data-id="${id}"${id===cur?' aria-current="page"':''}><span class="tk">${g[2]===1?'Hesaplayıcı':'Rehber'}</span><b>${TITLES[id]}</b><span class="td">${DESC[id]}</span></a>`).join('')}</div></div>`).join('');}
 
 function gradeBadge(g){return `<span class="g g-${g}" title="Öneri derecesi">${GL[g]||g}</span>`;}
 function renderRecs(r){return '<ul class="recs">'+r.map(x=>`<li>${gradeBadge(x[1])}<p>${x[0]}<span class="s">${SRC[x[2]]||''}</span></p></li>`).join('')+'</ul>';}
@@ -951,19 +1041,31 @@ function refsHTML(){
 }
 
 function buildNav(){
-  let h='',o='';
-  GROUPS.forEach(g=>{h+=`<h4>${g[0]}</h4>`;o+=`<optgroup label="${g[0]}">`;g[1].forEach(id=>{h+=`<a href="#${id}" data-id="${id}">${TITLES[id]}</a>`;o+=`<option value="${id}">${TITLES[id]}</option>`;});o+='</optgroup>';});
-  $('#nav').innerHTML=h;$('#navSel').innerHTML=o;
-  $('#navSel').addEventListener('change',e=>{location.hash=e.target.value;});
+  let h='<a href="#anasayfa" data-id="anasayfa" class="home">Ana sayfa</a>';
+  GROUPS.forEach(g=>{h+=`<h4 class="gc${g[2]}"><span class="dot"></span>${g[0]}</h4>`;g[1].forEach(id=>{h+=`<a class="gc${g[2]}" href="#${id}" data-id="${id}">${TITLES[id]}</a>`;});});
+  $('#nav').innerHTML=h;
+  $('#homeTiles').innerHTML=tilesHTML();
+  $('#secBtn').addEventListener('click',openSheet);
+  $('#sheetX').addEventListener('click',closeSheet);
+  $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet'||e.target.closest('a.tile'))closeSheet();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
 }
-let current='gereksinim';
+function openSheet(){$('#sheetTiles').innerHTML=tilesHTML(current);$('#sheet').hidden=false;document.body.style.overflow='hidden';const a=$('#sheetTiles a[aria-current]');(a||$('#sheetX')).focus();}
+function closeSheet(){if($('#sheet').hidden)return;$('#sheet').hidden=true;document.body.style.overflow='';}
+let current='anasayfa';
 function show(id){
-  if(!document.querySelector(`section[data-mod="${id}"]`))id='gereksinim';
-  current=id;
+  if(!document.querySelector(`section[data-mod="${id}"]`))id='anasayfa';
+  current=id;closeSheet();
   $$('section.mod').forEach(s=>s.hidden=s.dataset.mod!==id);
-  $$('#nav a').forEach(a=>a.toggleAttribute('aria-current',a.dataset.id===id));
   $$('#nav a').forEach(a=>{if(a.dataset.id===id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
-  if(id!=='ara')$('#navSel').value=id;
+  const g=GROUP_OF[id];
+  document.documentElement.style.setProperty('--cur',g?`var(--c${g[2]})`:'var(--accent)');
+  $('#secGrp').textContent=g?g[0]:'Başlangıç';
+  $('#secTitle').textContent=TITLES[id]||'Ana sayfa';
+  const i=ORDER.indexOf(id),pg=$('#pager');
+  if(i<0)pg.innerHTML='';
+  else{const pv=ORDER[i-1],nx=ORDER[i+1];
+    pg.innerHTML=(pv?`<a class="pv" href="#${pv}"><small>← Önceki</small><b>${TITLES[pv]}</b></a>`:'')+(nx?`<a class="nx" href="#${nx}"><small>Sonraki →</small><b>${TITLES[nx]}</b></a>`:'');}
   window.scrollTo(0,0);
 }
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h){$('#q').value='';show(h);}});
@@ -1232,13 +1334,14 @@ function renderNN(){
 let INDEX=[];
 function buildIndex(){Object.keys(M).forEach(id=>(M[id].sec||[]).forEach(s=>s.r.forEach(r=>INDEX.push({id,h:s.h,t:r[0],g:r[1],s:r[2]}))));}
 function doSearch(q){
-  q=q.trim();if(q.length<2){show(location.hash.slice(1)||current==='ara'?(location.hash.slice(1)||'gereksinim'):current);return;}
+  q=q.trim();if(q.length<2){show(location.hash.slice(1)||current==='ara'?(location.hash.slice(1)||'anasayfa'):current);return;}
   const norm=x=>x.toLocaleLowerCase('tr-TR');const nq=norm(q);
   const hits=INDEX.filter(x=>norm(x.t.replace(/<[^>]+>/g,'')).includes(nq)||norm(x.h).includes(nq));
   const re=new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
   $('#araH').textContent=`“${q}” · ${hits.length} öneri`;
   $('#araList').innerHTML=hits.slice(0,120).map(x=>`<li>${gradeBadge(x.g)}<p>${x.t.replace(re,'<mark>$1</mark>')}<span class="s">${SRC[x.s]||''} · <a href="#${x.id}">${TITLES[x.id]} › ${x.h}</a></span></p></li>`).join('')||'<li><span></span><p>Sonuç yok. Daha kısa bir terim deneyin.</p></li>';
   $$('section.mod').forEach(s=>s.hidden=s.dataset.mod!=='ara');
+  $('#secGrp').textContent='Arama';$('#secTitle').textContent='“'+q+'”';$('#pager').innerHTML='';
 }
 
 /* ================= INIT ================= */
@@ -1280,7 +1383,7 @@ function importFromHash(){
 }
 window.addEventListener('hashchange',()=>{importFromHash();});
 all();
-if(!importFromHash())show(location.hash.slice(1)||'gereksinim');
+if(!importFromHash())show(location.hash.slice(1)||'anasayfa');
 })();
 </script>
 
