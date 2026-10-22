@@ -1,0 +1,1297 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1D6A4D">
+<meta name="description" content="ESPEN kılavuzlarına dayalı erişkin klinik beslenme hesaplayıcıları ve önerileri">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Beslenme">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Klinik Beslenme Rehberi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: app shell — sticky header, left module index (desktop) / select (phone), calculators render results as "nutrition facts" panels with heavy rules */
+:root{
+  --paper:#F4F5F0; --surface:#FFFFFF; --ink:#17201B; --muted:#58645D; --rule:#17201B; --line:#D6DBD2;
+  --accent:#1D6A4D; --accent-ink:#FFFFFF; --accent-soft:#E0EDE5;
+  --ok:#2C7A4C; --ok-soft:#E0F0E5; --warn:#9A5A08; --warn-soft:#FAEFD9; --crit:#B0372B; --crit-soft:#F7E1DD;
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#111613; --surface:#19201C; --ink:#E6ECE7; --muted:#9BA69F; --rule:#E6ECE7; --line:#2B3530;
+  --accent:#62C499; --accent-ink:#0B1711; --accent-soft:#1D3228;
+  --ok:#6FCB93; --ok-soft:#1B3125; --warn:#E6A84E; --warn-soft:#33281A; --crit:#EF7D70; --crit-soft:#3A211E; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#111613; --surface:#19201C; --ink:#E6ECE7; --muted:#9BA69F; --rule:#E6ECE7; --line:#2B3530;
+  --accent:#62C499; --accent-ink:#0B1711; --accent-soft:#1D3228;
+  --ok:#6FCB93; --ok-soft:#1B3125; --warn:#E6A84E; --warn-soft:#33281A; --crit:#EF7D70; --crit-soft:#3A211E; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:3px solid var(--rule)}
+.top-in{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.mark{font-family:var(--f-display);font-weight:900;font-stretch:70%;font-size:13px;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--rule);padding:2px 6px;line-height:1.2}
+.brand b{font-family:var(--f-display);font-weight:800;font-stretch:85%;font-size:19px;display:block;line-height:1.1}
+.brand small{color:var(--muted);font-size:12px}
+.ptchip{font-size:13px;font-variant-numeric:tabular-nums;color:var(--muted);border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:var(--paper);cursor:pointer;font-family:inherit}
+.ptchip b{color:var(--ink)}
+.search{margin-left:auto;flex:1 1 220px;max-width:380px}
+.search input{width:100%;font:inherit;font-size:14px;padding:7px 10px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px}
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.idx{border-right:1px solid var(--line);padding:18px 14px 40px max(16px,env(safe-area-inset-left,0px));position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);align-self:start;max-height:calc(100vh - 64px);overflow:auto}
+nav.idx h4{font-family:var(--f-display);font-stretch:75%;font-weight:700;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:18px 0 6px}
+nav.idx h4:first-child{margin-top:0}
+nav.idx a{display:block;text-decoration:none;color:var(--ink);padding:5px 8px;border-radius:5px;font-size:14px}
+nav.idx a:hover{background:var(--accent-soft)}
+nav.idx a[aria-current="page"]{background:var(--ink);color:var(--paper);font-weight:600}
+main{padding-block:22px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));min-width:0}
+.mobnav{display:none}
+section.mod{max-width:1040px}
+.mod-h{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20px}
+.eyebrow{font-family:var(--f-display);font-stretch:75%;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+.mod-h h1{font-weight:850;font-stretch:80%;font-size:clamp(28px,4vw,40px);line-height:1.05}
+.lede{max-width:68ch;color:var(--muted);margin:8px 0 0}
+.srcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.src{font-size:11.5px;border:1px solid var(--line);padding:1px 8px;border-radius:999px;color:var(--muted);background:var(--surface)}
+.calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,380px);gap:24px;align-items:start;margin-bottom:28px}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px 14px;align-content:start}
+.fields .wide{grid-column:1/-1}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;min-width:0}
+label.f span.h{font-weight:400;color:var(--muted);font-size:12px}
+input,select{font:inherit;font-size:15px;padding:7px 9px;border:1.5px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);width:100%;min-width:0}
+input:focus,select:focus{border-color:var(--accent);outline:none}
+input[type=number]{font-variant-numeric:tabular-nums}
+.chk{display:flex;gap:9px;align-items:flex-start;font-size:14px;padding:6px 0;border-bottom:1px solid var(--line)}
+.chk input{width:18px;height:18px;margin-top:2px;flex:none;accent-color:var(--accent)}
+.chk:last-child{border-bottom:0}
+fieldset{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:0;min-width:0;background:var(--surface)}
+legend{font-family:var(--f-display);font-weight:700;font-stretch:85%;font-size:14px;padding:0 6px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button.b{font:inherit;font-size:13.5px;font-weight:600;padding:7px 12px;border-radius:6px;border:1.5px solid var(--ink);background:var(--surface);color:var(--ink);cursor:pointer}
+button.b.pri{background:var(--ink);color:var(--paper)}
+button.b:hover{border-color:var(--accent)}
+/* Nutrition-facts panel */
+.panel{border:2px solid var(--rule);background:var(--surface);padding:8px 12px 10px;font-variant-numeric:tabular-nums;position:sticky;top:calc(env(safe-area-inset-top,0px) + 80px)}
+.panel h3{font-weight:900;font-stretch:72%;font-size:30px;line-height:1;letter-spacing:-.01em;padding-bottom:4px;border-bottom:1px solid var(--rule)}
+.panel .sub{font-size:12.5px;padding:3px 0 5px;border-bottom:9px solid var(--rule)}
+.prow{display:flex;justify-content:space-between;gap:10px;align-items:baseline;border-bottom:1px solid var(--rule);padding:4px 0;font-size:14px}
+.prow b{font-weight:800}
+.prow .v{text-align:right;white-space:nowrap}
+.prow.thick{border-bottom-width:5px}
+.prow.big{font-family:var(--f-display);font-weight:900;font-stretch:80%;font-size:15px}
+.prow.big .v{font-size:30px;line-height:1.05}
+.prow.ind{padding-left:14px}
+.pnote{font-size:12px;color:var(--muted);padding-top:6px;line-height:1.45}
+.pnote ul{margin:4px 0 0;padding-left:16px}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:4px;white-space:nowrap}
+.tag.ok{background:var(--ok-soft);color:var(--ok)} .tag.warn{background:var(--warn-soft);color:var(--warn)} .tag.crit{background:var(--crit-soft);color:var(--crit)} .tag.neu{background:var(--accent-soft);color:var(--accent)}
+.checks{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:5px}
+.checks li{display:flex;gap:8px;align-items:baseline;font-size:13px}
+/* Content */
+.sec{margin:0 0 26px}
+.sec h2{font-weight:800;font-stretch:85%;font-size:21px;margin-bottom:8px;display:flex;gap:10px;align-items:baseline}
+.sec h2 .cnt{font-family:var(--f-body);font-size:12px;font-weight:500;color:var(--muted)}
+ul.recs{list-style:none;padding:0;margin:0;border-top:2px solid var(--rule)}
+ul.recs li{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;padding:8px 0;border-bottom:1px solid var(--line);align-items:start}
+ul.recs li p{margin:0;max-width:78ch}
+ul.recs li .s{font-size:11.5px;color:var(--muted);display:block;margin-top:2px}
+.g{font-family:var(--f-display);font-weight:800;font-stretch:80%;font-size:12px;text-align:center;padding:2px 0;border-radius:4px;border:1.5px solid var(--ink);line-height:1.3;margin-top:2px}
+.g-A{background:var(--ink);color:var(--paper)}
+.g-B{border-color:var(--ink)}
+.g-0{border-color:var(--muted);color:var(--muted)}
+.g-GPP{border-style:dashed;border-color:var(--muted);color:var(--muted)}
+.g-S{border-color:var(--accent);color:var(--accent)}
+.g-C{border-color:var(--line);color:var(--muted)}
+.g-UI{border-color:transparent;color:var(--muted);font-weight:600}
+.g-G{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.g-Z{border-color:var(--accent);color:var(--accent)}
+.tw{overflow-x:auto;margin:8px 0 6px;border-top:2px solid var(--rule)}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:7px 10px 7px 0;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-stretch:85%;font-weight:700;font-size:13px;border-bottom:1.5px solid var(--rule)}
+.note{border-left:4px solid var(--warn);background:var(--warn-soft);padding:9px 12px;font-size:13.5px;margin:10px 0;max-width:80ch}
+.note.info{border-color:var(--accent);background:var(--accent-soft)}
+.note b{font-weight:700}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin:10px 0 20px}
+.legend div{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px;align-items:start;font-size:13px}
+.refs{padding-left:22px;font-size:14px}
+.refs li{margin-bottom:6px}
+footer.disc{font-size:12px;color:var(--muted);border-top:1px solid var(--line);margin-top:40px;padding-top:12px;max-width:80ch}
+mark{background:var(--warn-soft);color:var(--ink);padding:0 1px}
+.hits li a{font-size:12px}
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  nav.idx{display:none}
+  .mobnav{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:16px}
+  .calc{grid-template-columns:minmax(0,1fr)}
+  .panel{position:static}
+  .search{max-width:none;margin-left:0}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+img{max-width:100%}
+.inst{display:none}
+.inst.on{display:inline-block}
+.offl{font-size:11.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><span class="mark">ESPEN</span><div><b>Klinik Beslenme Rehberi</b><small>Erişkin · kılavuz temelli hesap ve öneriler</small></div></div>
+    <button class="b inst" id="instBtn" type="button">Ana ekrana ekle</button>
+    <button class="ptchip" id="ptChip" type="button" title="Hasta profilini düzenle"></button>
+    <div class="search"><input type="search" id="q" placeholder="Önerilerde ara: fosfat, PEG, sitrat, BCAA…" aria-label="Önerilerde ara"></div>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="idx" id="nav" aria-label="Bölümler"></nav>
+<main id="main">
+<label class="mobnav">Bölüm<select id="navSel"></select></label>
+
+<!-- ============ PROFİL ============ -->
+<section class="mod" data-mod="profil" hidden>
+  <header class="mod-h"><p class="eyebrow">Hesaplayıcı</p><h1>Hasta profili ve referans ağırlık</h1>
+  <p class="lede">Girilen değerler tüm hesaplayıcılarda kullanılır ve bu tarayıcıda saklanır. Sayfa örnek bir hasta ile açılır.</p></header>
+  <div class="calc">
+    <form class="fields" id="fProfil" autocomplete="off">
+      <label class="f">Yaş (yıl)<input id="p_age" type="number" inputmode="numeric" value="68" min="18" max="110"></label>
+      <label class="f">Cinsiyet<select id="p_sex"><option value="E">Erkek</option><option value="K">Kadın</option></select></label>
+      <label class="f">Boy (cm)<input id="p_h" type="number" inputmode="decimal" value="172" step="0.5"></label>
+      <label class="f">Aktüel ağırlık (kg)<input id="p_w" type="number" inputmode="decimal" value="81" step="0.1"></label>
+      <label class="f">Olağan / yatış öncesi ağırlık (kg)<span class="h">Boş bırakılabilir</span><input id="p_u" type="number" inputmode="decimal" value="88" step="0.1"></label>
+      <label class="f">Düzeltilmiş ağırlık katsayısı<span class="h">Fazla ağırlığın eklenen oranı</span><select id="p_abwf"><option value="0.25">%25</option><option value="0.2">%20</option></select></label>
+      <label class="f">Asit<span class="h">Kuru ağırlık düzeltmesi</span><select id="p_asc"><option value="0">Yok</option><option value="5">Hafif (−%5)</option><option value="10">Orta (−%10)</option><option value="15">Ağır (−%15)</option></select></label>
+      <label class="f">Periferik ödem<span class="h">Bilateral</span><select id="p_ed"><option value="0">Yok</option><option value="5">Var (−%5 ek)</option></select></label>
+    </form>
+    <div class="panel" id="outProfil"></div>
+  </div>
+  <div class="sec"><h2>Referans ağırlık seçimi</h2>
+    <ul class="recs">
+      <li><span class="g g-GPP">GPP</span><p>Obez kritik hastada IC yoksa enerji <b>düzeltilmiş ağırlık</b> üzerinden; protein 1,3 g/kg düzeltilmiş ağırlık. İdeal ağırlık ≈ 0,9 × boy(cm) − 100 (erkek) / − 106 (kadın); düzeltilmiş = ideal + (aktüel − ideal) × 0,20–0,25. BMI &gt;25 kg/m² olduğunda referans aktüelden ideale kayar.<span class="s">ESPEN YBÜ 2023</span></p></li>
+      <li><span class="g g-0">0</span><p>Böbrek hastalığında protein reçetesi için mümkünse <b>yatış öncesi/olağan ağırlık</b> kullanılır; sıvı yükü nedeniyle aktüel ağırlık kullanılmamalıdır.<span class="s">ESPEN Böbrek 2021, Öneri 18</span></p></li>
+      <li><span class="g g-UI">—</span><p>Asitli sirozda enerji hesabı için boya göre ideal ağırlık veya ödemden arındırılmış (kuru) ağırlık kullanılır. Bu sayfadaki %5/%10/%15 (+%5 ödem) pratik düzeltmesi EASL 2019 beslenme kılavuzundaki yaygın yaklaşımdır; ESPEN 2020 metni yüzde vermez.<span class="s">ESPEN Karaciğer 2020 · düzeltme oranları defter dışı</span></p></li>
+      <li><span class="g g-0">0</span><p>Polimorbid hastada ağırlık temelli hedefler <b>aktüel ağırlık</b> üzerinden tanımlanmıştır (≥65 yaş ≈27 kcal/kg; ağır düşük kiloluda ≈30 kcal/kg).<span class="s">ESPEN Polimorbid 2023</span></p></li>
+      <li><span class="g g-GPP">GPP</span><p>Obez siroz/NASH hastasında araya giren akut hastalıkta hedefler <b>ideal ağırlık</b> üzerinden: 25 kcal/kg ve 2,0–2,5 g protein/kg.<span class="s">ESPEN Karaciğer 2020</span></p></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ TARAMA ============ -->
+<section class="mod" data-mod="tarama" hidden>
+  <header class="mod-h"><p class="eyebrow">Hesaplayıcı</p><h1>Tarama ve tanı skorları</h1>
+  <p class="lede">NRS-2002 (yatan hasta), GLIM (malnütrisyon tanısı ve evresi) ve MNA-SF (yaşlı birey). BMI ve kilo kaybı profilden otomatik alınır.</p>
+  <div class="srcs"><span class="src">ESPEN Polimorbid 2023</span><span class="src">ESPEN YBÜ 2023</span><span class="src">ESPEN Geriatri 2022</span><span class="src">GLIM 2019 (kılavuzlarda atıf)</span></div></header>
+
+  <h2 style="font-size:22px;font-weight:800;font-stretch:85%;margin-bottom:10px">NRS-2002</h2>
+  <div class="calc">
+    <div style="display:grid;gap:12px;min-width:0">
+      <fieldset><legend>Ön tarama — biri “evet” ise ana taramaya geçilir</legend>
+        <label class="chk"><input type="checkbox" id="n_pre1" disabled><span>BMI &lt;20,5 kg/m² <small class="muted" id="n_pre1t"></small></span></label>
+        <label class="chk"><input type="checkbox" id="n_pre2"><span>Son 3 ayda kilo kaybı</span></label>
+        <label class="chk"><input type="checkbox" id="n_pre3"><span>Son 1 haftada besin alımında azalma</span></label>
+        <label class="chk"><input type="checkbox" id="n_pre4"><span>Ağır hastalık (örn. yoğun bakım)</span></label>
+      </fieldset>
+      <div class="fields">
+        <label class="f wide">Beslenme durumunda bozulma<select id="n_nut">
+          <option value="0">0 · Normal beslenme durumu</option>
+          <option value="1">1 · Hafif: 3 ayda &gt;%5 kilo kaybı veya son hafta alım gereksinimin %50–75’i</option>
+          <option value="2" selected>2 · Orta: 2 ayda &gt;%5 kayıp veya BMI 18,5–20,5 + genel durum bozuk veya alım %25–50</option>
+          <option value="3">3 · Ağır: 1 ayda &gt;%5 (3 ayda &gt;%15) kayıp veya BMI &lt;18,5 + genel durum bozuk veya alım %0–25</option></select></label>
+        <label class="f wide">Hastalık şiddeti (stres)<select id="n_sev">
+          <option value="0">0 · Normal gereksinim</option>
+          <option value="1" selected>1 · Hafif: kalça kırığı, kronik hastalığın akut komplikasyonu (KOAH, diyabet, siroz, HD, kanser)</option>
+          <option value="2">2 · Orta: majör abdominal cerrahi, inme, ağır pnömoni, hematolojik malignite</option>
+          <option value="3">3 · Ağır: kafa travması, kemik iliği nakli, YBÜ hastası (APACHE &gt;10)</option></select></label>
+      </div>
+    </div>
+    <div class="panel" id="outNRS"></div>
+  </div>
+
+  <h2 style="font-size:22px;font-weight:800;font-stretch:85%;margin:8px 0 10px">GLIM</h2>
+  <div class="calc">
+    <div style="display:grid;gap:12px;min-width:0">
+      <div class="fields"><label class="f">Kilo kaybı süresi<select id="g_per"><option value="6">≤6 ay içinde</option><option value="12">&gt;6 ay</option></select></label>
+      <label class="f">Kilo kaybı (%)<span class="h">Profilden; değiştirilebilir</span><input id="g_wl" type="number" inputmode="decimal" step="0.1"></label></div>
+      <fieldset><legend>Fenotipik kriterler</legend>
+        <label class="chk"><input type="checkbox" id="g_f1" disabled><span>İstemsiz kilo kaybı: &gt;%5 (≤6 ay) veya &gt;%10 (&gt;6 ay)</span></label>
+        <label class="chk"><input type="checkbox" id="g_f2" disabled><span>Düşük BMI: &lt;20 (&lt;70 yaş) / &lt;22 (≥70 yaş) <small id="g_f2t"></small></span></label>
+        <label class="chk"><input type="checkbox" id="g_f3"><span>Azalmış kas kütlesi (BT L3, USG, BIA, DXA)</span></label>
+        <label class="chk"><input type="checkbox" id="g_f3s"><span>…ve kas kaybı <b>ağır</b> düzeyde</span></label>
+      </fieldset>
+      <fieldset><legend>Etiyolojik kriterler</legend>
+        <label class="chk"><input type="checkbox" id="g_e1" checked><span>Azalmış alım/asimilasyon: &gt;1 hafta gereksinimin ≤%50’si, &gt;2 hafta herhangi azalma veya kronik GİS durumu</span></label>
+        <label class="chk"><input type="checkbox" id="g_e2" checked><span>İnflamasyon / hastalık yükü (akut hastalık-yaralanma ya da kronik hastalık)</span></label>
+      </fieldset>
+    </div>
+    <div class="panel" id="outGLIM"></div>
+  </div>
+
+  <h2 style="font-size:22px;font-weight:800;font-stretch:85%;margin:8px 0 10px">MNA-SF (yaşlı birey)</h2>
+  <div class="calc">
+    <div class="fields">
+      <label class="f wide">A · Son 3 ayda iştahsızlık, sindirim, çiğneme/yutma sorunu nedeniyle alımda azalma<select id="m_a"><option value="0">0 · Ciddi azalma</option><option value="1">1 · Orta azalma</option><option value="2" selected>2 · Azalma yok</option></select></label>
+      <label class="f wide">B · Son 3 ayda kilo kaybı<select id="m_b"><option value="0">0 · &gt;3 kg</option><option value="1">1 · Bilinmiyor</option><option value="2" selected>2 · 1–3 kg</option><option value="3">3 · Kayıp yok</option></select></label>
+      <label class="f wide">C · Hareketlilik<select id="m_c"><option value="0">0 · Yatağa/sandalyeye bağımlı</option><option value="1">1 · Yataktan kalkabiliyor, dışarı çıkamıyor</option><option value="2" selected>2 · Dışarı çıkabiliyor</option></select></label>
+      <label class="f wide">D · Son 3 ayda psikolojik stres veya akut hastalık<select id="m_d"><option value="0" selected>0 · Evet</option><option value="2">2 · Hayır</option></select></label>
+      <label class="f wide">E · Nöropsikolojik sorun<select id="m_e"><option value="0">0 · Ağır demans/depresyon</option><option value="1">1 · Hafif demans</option><option value="2" selected>2 · Yok</option></select></label>
+      <label class="f wide">F · BMI (profilden) veya baldır çevresi<select id="m_f"><option value="auto">BMI’den otomatik</option><option value="0">Baldır çevresi &lt;31 cm (0)</option><option value="3">Baldır çevresi ≥31 cm (3)</option></select></label>
+    </div>
+    <div class="panel" id="outMNA"></div>
+  </div>
+</section>
+
+<!-- ============ GEREKSİNİM ============ -->
+<section class="mod" data-mod="gereksinim" hidden>
+  <header class="mod-h"><p class="eyebrow">Hesaplayıcı</p><h1>Enerji ve protein gereksinimi</h1>
+  <p class="lede">Klinik duruma özgü ESPEN hedefleri, önerilen referans ağırlıkla hesaplanır. İndirekt kalorimetri (IC) varsa her zaman önceliklidir; ventilatör VCO₂ değeri girilirse REE = VCO₂ × 8,19 kullanılır.</p></header>
+  <div class="calc">
+    <form class="fields" id="fReq" autocomplete="off">
+      <label class="f wide">Klinik durum<select id="r_set"></select></label>
+      <label class="f">Referans ağırlık<select id="r_basis"><option value="auto">Kılavuzun önerdiği</option><option value="actual">Aktüel</option><option value="ibw">İdeal</option><option value="abw">Düzeltilmiş</option><option value="dry">Kuru (ödem/asit düzeltilmiş)</option><option value="usual">Olağan / yatış öncesi</option></select></label>
+      <label class="f">VCO₂ (mL/dk)<span class="h">Ventilatörden, isteğe bağlı</span><input id="r_vco2" type="number" inputmode="decimal" placeholder="örn. 200"></label>
+      <label class="f">Ölçülen REE (kcal/gün)<span class="h">IC sonucu, isteğe bağlı</span><input id="r_ic" type="number" inputmode="decimal" placeholder="örn. 1750"></label>
+      <div class="btns wide"><button type="button" class="b pri" id="toEN">EN planına aktar</button><button type="button" class="b" id="toPN">PN analizine aktar</button><button type="button" class="b" id="goProf">Profili düzenle</button></div>
+    </form>
+    <div class="panel" id="outReq"></div>
+  </div>
+  <details class="sec"><summary style="cursor:pointer;font-weight:600">Prediktif denklemler (yalnızca karşılaştırma için)</summary>
+    <div class="note">ESPEN, prediktif denklemlerin bireysel doğruluğunun düşük olduğunu (YBÜ’de %60’a varan hata) vurgular; IC veya VCO₂ yoksa basit ağırlık temelli formül tercih edilir.</div>
+    <div class="tw"><table id="tPred"></table></div>
+  </details>
+</section>
+
+<!-- ============ EN PLAN ============ -->
+<section class="mod" data-mod="en-plan" hidden>
+  <header class="mod-h"><p class="eyebrow">Hesaplayıcı</p><h1>Enteral beslenme planı</h1>
+  <p class="lede">Hedef enerji ve proteinden günlük hacim, hedef hız ve kademeli artış takvimi. Kritik hastada ilk 3 günün ≤%70 sınırı otomatik uygulanabilir.</p>
+  <div class="srcs"><span class="src">ESPEN EN 2006 (TR)</span><span class="src">ESPEN Cerrahi 2021</span><span class="src">ESPEN YBÜ 2023</span><span class="src">ESPEN Böbrek 2021</span></div></header>
+  <div class="calc">
+    <form class="fields" id="fEN" autocomplete="off">
+      <label class="f">Hedef enerji (kcal/gün)<input id="e_kcal" type="number" inputmode="decimal" value="1800"></label>
+      <label class="f">Hedef protein (g/gün)<input id="e_prot" type="number" inputmode="decimal" value="100"></label>
+      <label class="f wide">Formül tipi<select id="e_pre">
+        <option value="1|40">Standart polimerik · 1,0 kcal/mL · 40 g protein/L</option>
+        <option value="1.5|60">Enerji yoğun · 1,5 kcal/mL · 60 g/L</option>
+        <option value="2|75">Konsantre renal · 2,0 kcal/mL · 75 g/L</option>
+        <option value="custom">Ürün etiketinden gir</option></select></label>
+      <label class="f">Enerji yoğunluğu (kcal/mL)<input id="e_den" type="number" inputmode="decimal" step="0.05" value="1"></label>
+      <label class="f">Protein (g/L)<input id="e_pgl" type="number" inputmode="decimal" value="40"></label>
+      <label class="f">İnfüzyon süresi (saat/gün)<select id="e_hr"><option value="24">24</option><option value="20">20</option><option value="18">18</option><option value="16">16</option></select></label>
+      <label class="f">Başlangıç hızı (mL/saat)<input id="e_start" type="number" inputmode="decimal" value="20"></label>
+      <label class="f">Hedefe ulaşma (gün)<input id="e_days" type="number" inputmode="numeric" value="5" min="2" max="10"></label>
+      <label class="chk wide"><input type="checkbox" id="e_icu"><span>Kritik hasta: ilk 3 gün hedefin ≤%70’i (ESPEN YBÜ 2023, B)</span></label>
+    </form>
+    <div class="panel" id="outEN"></div>
+  </div>
+  <div class="sec"><h2>Artış takvimi</h2><div class="tw"><table id="tEN"></table></div>
+  <p class="pnote">Formül değerleri örnek ürün sınıflarıdır (standart 40–60 g/L, konsantre renal 70–80 g/L; ESPEN Böbrek 2021). Kullandığınız ürünün etiket değerlerini girin.</p></div>
+</section>
+
+<!-- ============ PN ANALİZ ============ -->
+<section class="mod" data-mod="pn-analiz" hidden>
+  <header class="mod-h"><p class="eyebrow">Hesaplayıcı</p><h1>Parenteral beslenme analizi</h1>
+  <p class="lede">Torba içeriğinden enerji, glukoz infüzyon hızı (GIR), substrat dozları, NPC:N oranı ve yaklaşık osmolarite; kılavuz sınırlarıyla karşılaştırılır.</p>
+  <div class="srcs"><span class="src">ESPEN PN 2009 (TR)</span><span class="src">ESPEN YBÜ 2023</span><span class="src">ESPEN KİY 2023</span><span class="src">ESPEN Ev PN 2023</span></div></header>
+  <div class="calc">
+    <form class="fields" id="fPN" autocomplete="off">
+      <label class="f">Klinik ortam<select id="n_set"><option value="icu">Yoğun bakım</option><option value="gen">Servis / genel</option><option value="hpn">Evde PN (uzun süreli)</option></select></label>
+      <label class="f">Damar yolu<select id="n_route"><option value="c">Santral</option><option value="p">Periferik</option></select></label>
+      <label class="f">Dozlama ağırlığı (kg)<span class="h">Gereksinimden aktarılır</span><input id="n_w" type="number" inputmode="decimal" step="0.1"></label>
+      <label class="f">Toplam hacim (mL)<input id="n_vol" type="number" inputmode="decimal" value="2000"></label>
+      <label class="f">İnfüzyon süresi (saat)<input id="n_hr" type="number" inputmode="decimal" value="24"></label>
+      <label class="f">Glukoz (g)<input id="n_glu" type="number" inputmode="decimal" value="250"></label>
+      <label class="f">Amino asit (g)<input id="n_aa" type="number" inputmode="decimal" value="90"></label>
+      <label class="f">Lipit (g)<input id="n_lip" type="number" inputmode="decimal" value="70"></label>
+      <label class="f">Na (mmol)<span class="h">Osmolarite için</span><input id="n_na" type="number" inputmode="decimal" value="80"></label>
+      <label class="f">K (mmol)<input id="n_k" type="number" inputmode="decimal" value="60"></label>
+      <label class="f">Non-nütrisyonel lipit (g)<span class="h">Propofol vb.</span><input id="n_lipx" type="number" inputmode="decimal" value="0"></label>
+    </form>
+    <div class="panel" id="outPN"></div>
+  </div>
+  <div class="note info">Katsayılar: glukoz 3,4 kcal/g; amino asit 4 kcal/g; lipit emülsiyonu 10 kcal/g (fosfolipit ve gliserol dahil; %20 emülsiyon ≈2 kcal/mL). Osmolarite yaklaşık tahmindir (glukoz 5, amino asit 10, lipit 1,5 mOsm/g; Na/K 2 mOsm/mmol); üretici değerini esas alın.</div>
+</section>
+
+<!-- ============ REFEEDING ============ -->
+<section class="mod" data-mod="refeeding" hidden>
+  <header class="mod-h"><p class="eyebrow">Hesaplayıcı</p><h1>Refeeding sendromu riski</h1>
+  <p class="lede">NICE CG32 kriterleri (ESPEN PN rehberinde atıf yapılan), başlangıç enerjisi, tiamin ve izlem planı. BMI kriterleri profilden otomatik işaretlenir.</p>
+  <div class="srcs"><span class="src">ESPEN PN 2009 (TR)</span><span class="src">ESPEN YBÜ 2023</span><span class="src">ESPEN Mikrobesin 2022</span><span class="src">ESPEN Geriatri 2022</span></div></header>
+  <div class="calc">
+    <div style="display:grid;gap:12px;min-width:0">
+      <fieldset><legend>Biri yeterli (yüksek risk)</legend>
+        <label class="chk"><input type="checkbox" id="rf_a1" disabled><span>BMI &lt;16 kg/m²</span></label>
+        <label class="chk"><input type="checkbox" id="rf_a2"><span>Son 3–6 ayda &gt;%15 istemsiz kilo kaybı</span></label>
+        <label class="chk"><input type="checkbox" id="rf_a3"><span>&gt;10 gün çok az veya hiç besin alımı</span></label>
+        <label class="chk"><input type="checkbox" id="rf_a4"><span>Beslenme öncesi düşük K, P veya Mg</span></label>
+      </fieldset>
+      <fieldset><legend>İkisi yeterli (yüksek risk)</legend>
+        <label class="chk"><input type="checkbox" id="rf_b1" disabled><span>BMI &lt;18,5 kg/m²</span></label>
+        <label class="chk"><input type="checkbox" id="rf_b2"><span>Son 3–6 ayda &gt;%10 istemsiz kilo kaybı</span></label>
+        <label class="chk"><input type="checkbox" id="rf_b3"><span>&gt;5 gün çok az veya hiç besin alımı</span></label>
+        <label class="chk"><input type="checkbox" id="rf_b4"><span>Alkol kullanım bozukluğu veya insülin, kemoterapi, antasit, diüretik kullanımı</span></label>
+      </fieldset>
+      <fieldset><legend>Çok yüksek risk</legend>
+        <label class="chk"><input type="checkbox" id="rf_c1" disabled><span>BMI &lt;14 kg/m²</span></label>
+        <label class="chk"><input type="checkbox" id="rf_c2"><span>&gt;15 gün ihmal edilebilir alım</span></label>
+      </fieldset>
+    </div>
+    <div class="panel" id="outRF"></div>
+  </div>
+</section>
+
+<!-- ============ NON-NÜTRİSYONEL ============ -->
+<section class="mod" data-mod="nonnut" hidden>
+  <header class="mod-h"><p class="eyebrow">Hesaplayıcı</p><h1>Non-nütrisyonel kaloriler</h1>
+  <p class="lede">Propofol, dekstroz solüsyonları, sitrat antikoagülasyonu, laktat tamponu ve periton diyalizi glukozu aşırı beslemenin sık gözden kaçan kaynaklarıdır; toplam enerjiye eklenmelidir.</p>
+  <div class="srcs"><span class="src">ESPEN YBÜ 2023</span><span class="src">ESPEN Böbrek 2021</span></div></header>
+  <div class="calc">
+    <form class="fields" id="fNN" autocomplete="off">
+      <label class="f">Propofol (mL/saat)<span class="h">%1 veya %2; 1,1 kcal/mL</span><input id="x_prop" type="number" inputmode="decimal" value="15"></label>
+      <label class="f">Dekstroz konsantrasyonu<select id="x_dc"><option value="5">%5</option><option value="10">%10</option><option value="20">%20</option><option value="30">%30</option><option value="50">%50</option></select></label>
+      <label class="f">Dekstroz hacmi (mL/gün)<input id="x_dv" type="number" inputmode="decimal" value="500"></label>
+      <label class="f">Sitrat (mmol/gün)<span class="h">0,59 kcal/mmol</span><input id="x_cit" type="number" inputmode="decimal" value="0"></label>
+      <label class="f">Laktat (g/gün)<span class="h">3,62 kcal/g</span><input id="x_lac" type="number" inputmode="decimal" value="0"></label>
+      <label class="f">PD glukoz emilimi (kcal/gün)<span class="h">Tipik ≈400</span><input id="x_pd" type="number" inputmode="decimal" value="0"></label>
+      <label class="f">Hedef enerji (kcal/gün)<span class="h">Gereksinimden</span><input id="x_tgt" type="number" inputmode="decimal" value="1800"></label>
+    </form>
+    <div class="panel" id="outNN"></div>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Kaynak</th><th>Enerji</th><th>Klinik katkı</th></tr></thead>
+    <tbody>
+    <tr><td>Propofol (lipit emülsiyonu)</td><td>1,1 kcal/mL</td><td>Lipit üst sınırına (1,5 g/kg/gün) dahil edilir</td></tr>
+    <tr><td>Sitrat</td><td>3 kcal/g · 0,59 kcal/mmol</td><td>ACD-A ve %4 TSC; insülinsiz metabolize olur</td></tr>
+    <tr><td>Glukoz (ACD-A, replasman/diyalizat)</td><td>3,4 kcal/g</td><td>Sitrat + 110 mg/dL glukozlu CVVH ≈513 kcal/gün</td></tr>
+    <tr><td>Laktat tampon</td><td>3,62 kcal/g</td><td>Yüksek laktatlı sıvı + ACD-A ile 1300 kcal/gün’e kadar</td></tr>
+    <tr><td>SLED / PIRRT</td><td>—</td><td>Net katkı sınırlı: 100–300 kcal/gün</td></tr>
+    <tr><td>Periton diyalizi glukozu</td><td>—</td><td>≈400 kcal/gün pozitif glukoz dengesi</td></tr>
+    </tbody></table></div>
+</section>
+
+<!-- content modules injected here -->
+<div id="contentMods"></div>
+
+<section class="mod" data-mod="ara" hidden>
+  <header class="mod-h"><p class="eyebrow">Arama</p><h1 id="araH">Sonuçlar</h1></header>
+  <ul class="recs hits" id="araList"></ul>
+</section>
+
+<footer class="disc">Bu uygulama ESPEN kılavuzlarının (NotebookLM “Klinik Beslenme Rehberi” defterindeki 13 kaynak) özetidir; klinik karar desteği sağlar, bireysel değerlendirmenin ve kurum protokollerinin yerini almaz. Öneri dereceleri kılavuzdaki haliyle verilmiştir; doğrulanamayan derecelerde “—” kullanılmıştır. <span class="offl" id="offl"></span> · Sürüm 1.1 (Ekim 2026)</footer>
+</main>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const fmt=(x,d=1)=>(x==null||!isFinite(x))?'—':Number(x).toLocaleString('tr-TR',{maximumFractionDigits:d});
+const rng=(a,b,d=0)=>Math.abs(a-b)<1e-9?fmt(a,d):fmt(a,d)+'–'+fmt(b,d);
+const num=id=>{const el=document.getElementById(id);if(!el)return NaN;const v=parseFloat(String(el.value).replace(',','.'));return v;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function load(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
+
+const SRC={icu:'ESPEN YBÜ 2023',ren:'ESPEN Böbrek 2021',liv:'ESPEN Karaciğer 2020',ibd:'ESPEN IBH 2023',can:'ESPEN Kanser 2021',pol:'ESPEN Polimorbid 2023',ger:'ESPEN Geriatri 2022',sur:'ESPEN Cerrahi 2021',mic:'ESPEN Mikrobesin 2022',cif:'ESPEN KİY 2023',hpn:'ESPEN Ev PN 2023',en:'ESPEN EN 2006 (TR)',pn:'ESPEN PN 2009 (TR)'};
+const GL={A:'A',B:'B','0':'0',GPP:'GPP',S:'İfade',C:'C',UI:'—',G:'Güçlü',Z:'Zayıf'};
+
+/* ================= CONTENT ================= */
+const M={};
+M.ayaktan={e:'Klinik ortam',t:'Ayaktan hasta ve taburculuk sonrası',lede:'Taburculuk sonrası beslenme desteği, ONS standartları ve hastalığa özgü ayaktan hedefler.',src:['pol','ger','can','ibd','liv'],sec:[
+{h:'Taburculuk sonrası destek',r:[
+['Malnütre veya risk altındaki polimorbid hastada beslenme desteği taburculuk sonrası sürdürülmeli: ağırlık ve beslenme durumunu korumak için.','A','pol'],
+['Kas fonksiyonu, fiziksel kapasite ve yaşam kalitesi için taburculuk sonrası destek sürdürülmeli.','B','pol'],
+['≥65 yaş malnütre/yüksek riskli hastada taburculuk sonrası ONS veya bireysel beslenme müdahalesi mortaliteyi azaltır; düşünülmeli.','A','pol'],
+['≥65 yaşta taburculuk sonrası destek mortalite ve klinik seyir için 2 aydan uzun sürdürülmeli (çalışmalarda ONS ≥3 ay, bireysel destek 4–6 ay).','B','pol'],
+['Tedavi yanıtı ve klinik sonuçlar için fonksiyonel parametreler (el sıkma gücü) izlenmeli; düşük HGS beslenme desteğinden en çok yarar görecek hastayı işaret eder.','B','pol']]},
+{h:'Oral nütrisyon destekleri (ONS)',r:[
+['Yaşlıda ONS günde en az 400 kcal ve ≥30 g protein sağlamalı.','A','ger'],
+['ONS en az 1 ay sürdürülmeli; etkinlik ve beklenen yarar ayda bir değerlendirilmeli.','GPP','ger'],
+['ONS istemeyen/tolere edemeyen hastada besin zenginleştirme (fortifikasyon) etkili bir alternatiftir (+250–450 kcal, +12–16 g protein/gün).','0','pol'],
+['Yüksek proteinli, spesifik (bHMB içeren) ONS kas kütlesi/fonksiyonu korumak ve mortaliteyi azaltmak için verilmeli.','B','pol'],
+['Kanserde yiyebilen ancak malnütre/riskli hastaya diyet danışmanlığı, beslenmeyi etkileyen semptomların tedavisi ve ONS.','G','can'],
+['Enerji alımını kısıtlayan kanıtsız diyetler (ketojenik, açlık kürleri) malnütre veya riskli kanser hastasında önerilmez.','G','can']]},
+{h:'Hastalığa özgü ayaktan hedefler',r:[
+['IBH remisyonda protein ≈1,0 g/kg/gün (genel popülasyonla aynı); aktif hastalıkta 1,2–1,5 g/kg/gün.','GPP','ibd'],
+['IBH’de yılda en az bir kez mikrobesin taraması (demir, B12, folat, D vitamini, çinko); eksiklikler replase edilmeli.','GPP','ibd'],
+['MASLD (kılavuzda NAFLD/NASH): steatoz ve enzimler için %7–10, fibrozis için &gt;%10 kilo kaybı hedeflenmeli.','A','liv'],
+['MASLD’de hipokalorik diyet makrobesin bileşiminden bağımsızdır; steatoz ve insülin duyarlılığı için Akdeniz diyeti önerilir.','B','liv'],
+['Diyabetik olmayan, biyopsi ile kanıtlı NASH’ta 800 IU/gün α-tokoferol (E vitamini).','B','liv'],
+['Kanser sağkalanında düzenli fiziksel aktivite, sağlıklı ağırlık (BMI 18,5–25 kg/m²) ve sebze-meyve-tam tahıl ağırlıklı, doymuş yağ/kırmızı et/alkol açısından düşük diyet.','G','can'],
+['Aşırı kilolu yaşlıda kilo verdiren diyetlerden kaçınılmalı; gerekirse ılımlı kısıtlama (≈−500 kcal, en az 1000–1200 kcal/gün) egzersizle birlikte.','GPP','ger']]}]};
+
+M.yatan={e:'Klinik ortam',t:'Yatan polimorbid hasta',lede:'İki veya daha fazla kronik hastalığı olan dahiliye hastası: tarama, hedefler, yol seçimi ve organizasyon.',src:['pol'],sec:[
+{h:'Tarama ve değerlendirme',r:[
+['Yatışta valide, hızlı bir araçla tarama (NRS-2002, MNA-SF).','B','pol'],
+['Tarama pozitifse GLIM ile tanı ve ayrıntılı değerlendirme; erken ve yeterli tedavi için bakım planı.','B','pol'],
+['Akut faz yanıtının şiddeti hasta seçiminde dikkate alınmalı: CRP ≥100 mg/L olan hastalar EFFORT’ta beslenme desteğine yanıt vermemiştir.','B','pol'],
+['Altta yatan hastalık beslenme yanıtını değiştirir; kalp yetmezliği, KOAH, kanser ve düşük eGFR’de yarar daha belirgindir.','B','pol']]},
+{h:'Hedefler',r:[
+['Enerji gereksinimi IC, yayımlanmış bir denklem veya ağırlık formülüyle belirlenebilir; denklemlerin doğruluğu bu grupta düşüktür.','0','pol'],
+['IC yoksa ≥65 yaş polimorbid hastada TEE ≈27 kcal/kg aktüel ağırlık; REE 18–20 kcal/kg + aktivite/stres faktörü.','0','pol'],
+['Ağır düşük kiloluda REE ≈30 kcal/kg aktüel ağırlık; bu hedefe refeeding riski nedeniyle yavaş ve dikkatli ulaşılmalı.','0','pol'],
+['Protein 1,2–1,5 g/kg/gün: kilo kaybını önleyen, komplikasyonu azaltan, maliyet etkin önlem.','A','pol'],
+['RRT almayan ve eGFR &lt;30 mL/dk/1,73 m² olan hastada protein 0,8 g/kg/gün.','B','pol'],
+['Hesaplanan enerji ve proteinin en az %75’ine ulaşılmalı (advers sonuç ve mortalite azalır).','A','pol'],
+['Beslenme desteği yatışın ilk 48 saatinde başlatılmalı.','A','pol']]},
+{h:'Yol ve formül',r:[
+['Güvenle oral beslenebilen malnütre/yüksek riskli hastaya bireyselleştirilmiş ONS.','A','pol'],
+['Oral gereksinim karşılanamıyorsa PN’den önce EN.','0','pol'],
+['EN, enfeksiyöz ve non-enfeksiyöz komplikasyon riskinin düşüklüğü ve barsak bütünlüğü nedeniyle PN’ye üstün olabilir.','0','pol'],
+['EN alan yaşlı polimorbid hastada çözünür + çözünmez lif karışımlı formül barsak fonksiyonunu iyileştirir.','0','pol'],
+['Bası yarasında arjinin, glutamin ve bHMB eklenebilir.','0','pol'],
+['Diğer hastalığa özgü besin destekleri (örn. rutin omega-3) önerilmez.','0','pol'],
+['Yalnızca oral beslenende günlük mikrobesin gereksinimi karşılanmalı; kanıtlı/şüpheli eksiklikler replase edilmeli.','GPP','pol']]},
+{h:'Organizasyon',r:[
+['Protein/enerji zenginleştirilmiş menüler gibi organizasyonel değişiklikler uygulanmalı.','B','pol'],
+['Beslenme destek ekibi (NST) ve multidisipliner protokoller kurulmalı.','B','pol']]}]};
+
+M.geriatri={e:'Klinik ortam',t:'Geriatri: beslenme ve hidrasyon',lede:'Yaşlı bireyde tarama, hedefler, ONS, disfaji, demans, tüple beslenme ve düşük alımlı dehidrasyon.',src:['ger'],sec:[
+{h:'Tarama ve hedefler',r:[
+['Tüm yaşlılar tanı ve ağırlıktan bağımsız (aşırı kilolu/obez dahil) valide bir araçla (örn. MNA-SF) rutin taranmalı.','GPP','ger'],
+['Enerji için yol gösterici değer 30 kcal/kg/gün; bireysel ayarlanır.','B','ger'],
+['Protein en az 1,0 g/kg/gün; akut/kronik hastalıkta 1,2–1,5, ağır hastalık/yaralanmada 2,0 g/kg’a kadar.','B','ger'],
+['Kadına en az 1,6 L/gün, erkeğe en az 2,0 L/gün içecek sunulmalı (klinik kontrendikasyon yoksa).','B','ger']]},
+{h:'Müdahaleler',r:[
+['Yeme bağımlılığı olan malnütre/riskli yaşlıya öğün yardımı: kurumda.','A','ger'],
+['Aynı yardım evde de sağlanmalı.','GPP','ger'],
+['Orofaringeal disfaji ve/veya çiğneme sorunu olana kıvamı değiştirilmiş, zenginleştirilmiş gıdalar.','GPP','ger'],
+['ONS ≥400 kcal ve ≥30 g protein/gün; en az 1 ay, aylık değerlendirme.','A','ger']]},
+{h:'Tüple beslenme',r:[
+['EN &lt;4 hafta bekleniyorsa nazogastrik tüp.','GPP','ger'],
+['EN &gt;4 hafta bekleniyorsa veya NG tolere edilmiyorsa perkütan gastrostomi (PEG).','GPP','ger'],
+['Ağır demansta EN’nin risk/yarar oranı genellikle olumsuzdur; önerilmez.','GPP','ger'],
+['Terminal dönemde EN yerine konfor beslemesi.','GPP','ger'],
+['Malnütre yaşlıda EN/PN erken başlanmalı, ilk 3 gün kademeli artırılmalı (refeeding).','GPP','ger'],
+['İlk 3 günde fosfat, magnezyum, potasyum ve tiamin yakından izlenmeli; hafif eksiklikte bile replase edilmeli.','GPP','ger']]},
+{h:'Düşük alımlı dehidrasyon',r:[
+['Tanıda doğrudan ölçülen serum/plazma osmolalitesi kullanılmalı.','GPP','ger'],
+['Eylem eşiği: ölçülen serum osmolalitesi &gt;300 mOsm/kg.','B','ger'],
+['Deri turgoru, ağız kuruluğu, ağırlık değişimi, idrar rengi veya dansitesi tanıda kullanılmamalı.','A','ger'],
+['BIA hidrasyon durumunu değerlendirmede kullanılmamalı.','A','ger']]},
+{h:'Obezite',r:[
+['Aşırı kilolu yaşlıda kas kaybını önlemek için kilo verdiren diyetlerden kaçınılmalı.','GPP','ger'],
+['Kilo verme düşünülürse diyet mümkün olduğunca egzersizle birleştirilmeli.','A','ger']]}]};
+
+M.kritik={e:'Klinik ortam',t:'Kritik hasta (yoğun bakım)',lede:'2023 kısmi revize ESPEN YBÜ kılavuzu: zamanlama, yol, faz bazlı hedefler, substratlar, glisemi ve refeeding.',src:['icu'],
+tbl:{h:'Faz bazlı hedefler',head:['Dönem','Enerji','Protein'],rows:[
+['Gün 1–3 (erken akut faz)','Ölçülen EE’nin ≤%70’i (B); IC/VCO₂ yoksa 20–25 kcal/kg tahminin ≤%70’i','Düşük başla, kademeli artır'],
+['Gün 3 sonrası','Ölçülen EE’nin %80–100’ü (0)','1,3 g/kg/gün kademeli (0)'],
+['Denklemle tahminde ilk hafta','Tahmini gereksinimin &lt;%70’i (B)','1,3 g/kg/gün hedef'],
+['Obez hasta','IC; yoksa düzeltilmiş ağırlık (GPP)','1,3 g/kg düzeltilmiş ağırlık (GPP)'],
+['Travma (abdominal sıvı kaybı)','—','1,5–2,0 g/kg/gün düşünülebilir']]},
+sec:[
+{h:'Tarama ve değerlendirme',r:[
+['YBÜ’de &gt;48 saat kalan her hasta malnütrisyon açısından risk altında kabul edilmeli. NRS-2002 ve MUST mortalite öngörüsünde en güçlü ve en hızlı araçlardır; NUTRIC alternatiftir.','S','icu'],
+['Tıbbi beslenme tedavisi özellikle &gt;48 saat kalan tüm hastalarda düşünülmeli.','GPP','icu'],
+['Spesifik araç doğrulanana dek genel klinik değerlendirme: öykü, istemsiz kilo kaybı, fizik muayene, kas kütlesi (USG, BT L3, BIA) ve kas gücü (el sıkma); tanı GLIM ile.','GPP','icu']]},
+{h:'Zamanlama ve yol',r:[
+['Yiyebilen hastada oral diyet EN/PN’ye tercih edilir; gün 3–7’de gereksinimin ≥%70’i karşılanıyorsa yeterli kabul edilir.','GPP','icu'],
+['Oral alım mümkün değilse 48 saat içinde erken EN, EN’yi geciktirmeye tercih edilir.','B','icu'],
+['Erken EN, erken PN’ye tercih edilmeli.','A','icu'],
+['Aşırı beslemeden kaçınmak için erken tam doz EN/PN verilmemeli; hedefe 3–7 günde ulaşılmalı.','A','icu'],
+['Bolus yerine sürekli EN.','B','icu'],
+['EN başlatmada standart yol gastrik erişimdir.','GPP','icu'],
+['Aspirasyon riski yüksekse postpilorik (tercihen jejunal) besleme.','GPP','icu'],
+['Prokinetiğe rağmen çözülmeyen gastrik intoleransta postpilorik besleme.','B','icu']]},
+{h:'Erken EN uygulanması gereken durumlar',r:[
+['ECMO; travmatik beyin hasarı; iskemik/hemorajik inme; omurilik yaralanması; ağır akut pankreatit; GİS cerrahisi ve abdominal aort cerrahisi sonrası; GİS bütünlüğü sağlanmış abdominal travma; nöromüsküler bloker alanlar; prone pozisyon; açık abdomen; barsak iskemisi/obstrüksiyon şüphesi yoksa barsak sesi olmasa da; diyare varlığında.','B','icu']]},
+{h:'EN’nin ertelenmesi veya düşük doz verilmesi',r:[
+['EN’yi ertele: kontrolsüz şok (sıvı/vazopresörle kontrol sağlanınca düşük doz başlanabilir); kontrolsüz yaşamı tehdit eden hipoksemi, hiperkapni veya asidoz; aktif üst GİS kanaması; aşikar barsak iskemisi; distal erişimi olmayan yüksek debili fistül; abdominal kompartman sendromu; gastrik aspirat &gt;500 mL/6 saat.','B','icu'],
+['Düşük doz EN: terapötik hipotermi (ısınma sonrası artır); kompartman sendromu olmadan intraabdominal hipertansiyon; akut karaciğer yetmezliğinde yaşamı tehdit eden metabolik bozukluklar kontrol altına alınınca.','B','icu'],
+['Gastrik intoleransta ilk seçenek IV eritromisin (genellikle 100–250 mg × 3/gün, 2–4 gün; 3–7 mg/kg/gün).','B','icu'],
+['Alternatif: IV metoklopramid (10 mg × 2–3/gün) veya eritromisin + metoklopramid. Etkinlik 72 saatten sonra üçte bire düşer; 3 gün sonra kesilmeli.','0','icu']]},
+{h:'Parenteral beslenme',r:[
+['Oral ve EN kontrendike ise PN 3–7 gün içinde başlanmalı.','B','icu'],
+['EN kontrendike olan ağır malnütre hastada hiç beslememek yerine erken ve kademeli PN.','0','icu'],
+['İlk hafta tam doz EN’yi tolere edemeyende PN başlatmanın güvenlik ve yararı olgu bazında tartılmalı (tamamlayıcı PN için genellikle gün 4–7).','GPP','icu'],
+['EN toleransını artırmaya yönelik tüm makul stratejiler denenmeden PN başlanmamalı.','GPP','icu']]},
+{h:'Enerji ve protein',r:[
+['Mekanik ventilasyondaki hastada EE indirekt kalorimetri ile belirlenmeli.','B','icu'],
+['IC yoksa ventilatör VCO₂ (REE = VCO₂ × 8,19) veya PA kateterinden VO₂ prediktif denklemlerden daha doğrudur; hiçbiri yoksa 20–25 kcal/kg/gün.','S','icu'],
+['Erken akut fazda hipokalorik beslenme (ölçülen EE’nin ≤%70’i).','B','icu'],
+['Gün 3’ten sonra ölçülen EE’nin %80–100’üne çıkılabilir.','0','icu'],
+['IC kullanılıyorsa erken fazdan sonra izokalorik beslenmeye kademeli geçilebilir.','0','icu'],
+['Denklem kullanılıyorsa ilk hafta hipokalorik (&lt;%70) beslenme tercih edilmeli.','B','icu'],
+['Kritik hastalıkta 1,3 g/kg/gün protein eşdeğeri kademeli olarak verilebilir.','0','icu'],
+['Fiziksel aktivite beslenme tedavisinin yararını artırabilir.','S','icu']]},
+{h:'Substratlar ve farmakonütrientler',r:[
+['Glukoz (PN) veya karbonhidrat (EN) 5 mg/kg/dk’yı aşmamalı.','GPP','icu'],
+['IV lipit emülsiyonu genel olarak PN’nin parçası olmalı.','GPP','icu'],
+['IV lipit (propofol gibi non-nütrisyonel kaynaklar dahil) 1,5 g/kg/gün’ü aşmamalı; üst öneri 1 g/kg/gün.','GPP','icu'],
+['Vücut yüzeyinin &gt;%20’si yanıkta EN başlar başlamaz 10–15 gün enteral glutamin 0,3–0,5 g/kg/gün.','B','icu'],
+['Ağır travmada ilk 5 gün enteral glutamin 0,2–0,3 g/kg/gün; yara iyileşmesi sorunluysa 10–15 gün.','0','icu'],
+['Yanık ve travma dışındaki YBÜ hastalarında ek enteral glutamin verilmemeli.','B','icu'],
+['Kararsız ve karmaşık hastada, özellikle karaciğer ve böbrek yetmezliğinde parenteral glutamin dipeptidi verilmemeli.','A','icu'],
+['Yüksek doz omega-3 ile zenginleştirilmiş enteral formül bolus verilmemeli; rutin kullanılmamalı.','B','icu'],
+['PN alanda EPA + DHA içeren lipit emülsiyonu (balık yağı 0,1–0,2 g/kg/gün) verilebilir.','0','icu'],
+['PN ile her gün mikrobesin (eser element + vitamin) verilmeli.','B','icu'],
+['Kanıtlı eksiklik yoksa yüksek doz antioksidan (selenyum, C vitamini, D vitamini, tiamin kombinasyonları) verilmemeli.','A','icu'],
+['D vitamini eksikliği riski olanlarda 25(OH)D ölçülebilir.','GPP','icu'],
+['&gt;2 hafta CRRT akut mikrobesin (özellikle ağır bakır) eksikliğinin yeni bir nedenidir.','UI','icu']]},
+{h:'Glisemi ve izlem',r:[
+['Kan glukozu yatışta/beslenme başlangıcında ve ilk 2 gün en az 4 saatte bir ölçülmeli.','GPP','icu'],
+['Glukoz 10 mmol/L’yi (180 mg/dL) aştığında insülin verilmeli.','A','icu'],
+['İlk hafta K, Mg ve P en az günde bir kez ölçülmeli.','GPP','icu'],
+['Refeeding hipofosfatemisinde (&lt;0,65 mmol/L veya &gt;0,16 mmol/L düşüş) elektrolitler günde 2–3 kez ölçülmeli, gerekirse replase edilmeli.','GPP','icu'],
+['Refeeding hipofosfatemisinde enerji 48 saat kısıtlanmalı, sonra kademeli artırılmalı.','B','icu']]},
+{h:'Özel gruplar',r:[
+['Entübe olmayan ve oral diyetle hedefe ulaşamayan hastada önce ONS, sonra EN.','GPP','icu'],
+['Ekstübasyon sonrası disfajide kıvamı uyarlanmış gıda; yutma güvensizse EN.','GPP','icu'],
+['Disfaji ve çok yüksek aspirasyon riskinde postpilorik EN; olmazsa yutma eğitimi sürerken geçici PN.','GPP','icu'],
+['Abdominal veya özofagus cerrahisi sonrası erken EN; kaçak olmayan anastomoz EN’yi geciktirmemeli.','0','icu'],
+['Cerrahi komplikasyonda GİS devamlılığı bozulmamışsa ve kompartman sendromu yoksa EN, PN’ye tercih edilmeli.','GPP','icu'],
+['Onarılmamış anastomoz kaçağı veya fistülde defektin distaline beslenme erişimi hedeflenmeli.','GPP','icu'],
+['Yüksek debili stoma/fistülde kimus reinfüzyonu veya enteroklizis değerlendirilmeli.','GPP','icu'],
+['Travmada erken EN, erken PN’ye tercih edilmeli.','B','icu'],
+['Sepsiste hemodinamik stabilizasyon sonrası erken ve kademeli EN; septik şokta resüsitasyon sonrası tam desteğin %20–50’si ile başlanır. Kontrendikeyse kademeli PN.','GPP','icu'],
+['Obez hastada IC ve idrar azotu rehberliğinde izokalorik, yüksek proteinli diyet verilebilir.','0','icu']]}]};
+
+M.cerrahi={e:'Klinik ortam',t:'Cerrahi hasta (perioperatif)',lede:'ERAS ilkeleri, ağır beslenme riski, preoperatif destek ve postoperatif erken beslenme.',src:['sur','en','pn','can','liv','ibd'],sec:[
+{h:'Ağır beslenme riski — en az biri',r:[
+['6 ayda &gt;%10–15 kilo kaybı; BMI &lt;18,5 kg/m²; SGA C veya NRS &gt;5; serum albümin &lt;30 g/L (karaciğer/böbrek disfonksiyonu yokken). Hipoalbüminemi malnütrisyondan çok hastalık şiddetini yansıtır, ancak açık bir cerrahi risk faktörüdür.','UI','sur']]},
+{h:'Preoperatif dönem',r:[
+['Gece yarısından itibaren açlık çoğu hastada gereksizdir. Aspirasyon riski olmayan hasta anesteziden 2 saat öncesine kadar berrak sıvı, 6 saat öncesine kadar katı gıda alabilir.','A','sur'],
+['Gece yerine oral karbonhidrat yüklemesi (önceki gece 800 mL, ameliyattan 2 saat önce 400 mL) perioperatif rahatsızlığı azaltır; majör cerrahide insülin direnci ve yatış süresi için düşünülebilir.','B','sur'],
+['Ağır beslenme riski olan hasta majör cerrahi öncesi beslenme tedavisi almalı; kanser cerrahisi dahil ameliyat ertelenebilir, 7–14 gün uygundur.','A','sur'],
+['Majör abdominal cerrahi geçirecek tüm malnütre kanser ve yüksek riskli hastalara (sarkopenik yaşlılar dahil) preoperatif ONS.','A','sur'],
+['İmmün modülatör ONS (arjinin, omega-3, nükleotid) tercih edilebilir, ameliyattan önce 5–7 gün.','0','sur'],
+['Majör kanser cerrahisi geçirecek malnütre hastada peri- veya en azından postoperatif immünonütrisyon.','B','sur'],
+['Geleneksel perioperatif bakım alan üst GİS kanser rezeksiyonunda oral/enteral immünonütrisyon.','G','can'],
+['Siroz/karaciğer cerrahisinde ERAS ile gereksiz açlık önlenmeli; preop 30–35 kcal/kg ve 1,2–1,5 g/kg protein.','GPP','liv']]},
+{h:'Postoperatif dönem',r:[
+['Çoğu hastada oral alım ameliyattan sonra kesintisiz sürdürülmeli.','A','sur'],
+['Erken oral beslenme başlatılamayan ve oral alımı &gt;7 gün yetersiz (&lt;%50) kalacak hastada 24 saat içinde erken EN: majör baş-boyun/GİS kanser cerrahisi, ağır travma, cerrahi sırasında belirgin malnütrisyon.','A','sur'],
+['EN 24 saat içinde, düşük hızla (10–en fazla 20 mL/saat) başlatılmalı; hedefe ulaşmak 5–7 gün sürebilir.','GPP','sur'],
+['Enerji gereksinimi oral + enteral yolla &gt;7 gün boyunca &lt;%50 karşılanıyorsa EN + PN kombinasyonu.','GPP','sur'],
+['Beslenme tedavisi endike ve EN kontrendike (örn. intestinal obstrüksiyon) ise PN en kısa sürede.','A','sur'],
+['PN’de çoklu şişe yerine hepsi bir arada (üç bölmeli veya eczanede hazırlanmış) torba.','B','sur'],
+['Karaciğer naklinden sonra 12–24 saat içinde normal gıda ve/veya EN; enteral formülle birlikte seçilmiş probiyotikler.','B','liv'],
+['Malnütre IBH hastasında cerrahi mümkünse 7–14 gün ertelenip yoğun beslenme desteği verilmeli.','B','ibd']]},
+{h:'EN kontrendikasyonları (cerrahi)',r:[
+['İntestinal obstrüksiyon veya ileus, ağır şok, intestinal iskemi, yüksek debili fistül, ağır intestinal kanama.','UI','sur']]}]};
+
+M.bobrek={e:'Organ ve hastalık',t:'Böbrek hastalığı: ABH, KBH ve RRT',lede:'Hastanede yatan ABH/AKD, KBH ve böbrek yetmezliği (RRT alan/almayan) hastaları. Stabil ayaktan KBH diyeti ve böbrek nakli bu kılavuzun kapsamı dışındadır.',src:['ren','pol','icu','pn','mic'],
+tbl:{h:'Protein hedefleri (Öneri 18 · derece 0)',head:['Klinik durum','Protein (g/kg/gün)'],rows:[
+['KBH, akut/kritik hastalık yok','0,6–0,8'],
+['KBH + konvansiyonel aralıklı kronik RRT, akut/kritik hastalık yok','≥1,2'],
+['ABH veya KBH zemininde ABH, akut/kritik hastalık yok','0,8–1,0'],
+['ABH / KBH + akut/kritik hastalık, RRT yok','1,0 ile başla → tolere edilirse 1,3'],
+['Kritik + konvansiyonel aralıklı RRT','1,3–1,5'],
+['Kritik + CRRT veya PIRRT','1,5 → en fazla 1,7'],
+['Polimorbid hasta, eGFR &lt;30, RRT yok (ESPEN Polimorbid 2023, B)','0,8']]},
+sec:[
+{h:'Endikasyon ve tarama',r:[
+['Hastaneye yatan her ABH/AKD, KBH zemininde ABH, böbrek yetmezliği olan/olmayan KBH hastasında tıbbi beslenme tedavisi düşünülebilir.','GPP','ren'],
+['Bu hastalar YBÜ’de &gt;48 saat kalıyorsa tıbbi beslenme tedavisi verilmeli.','GPP','ren'],
+['Malnütre veya riskli, kritik olmayan, güvenle oral beslenebilen ancak hedefe ulaşamayan hastaya ONS (2 kez/gün, öğünden ≥1 saat sonra +10–12 kcal/kg ve +0,3–0,5 g protein/kg).','A','ren'],
+['ONS/EN’ye yanıt vermeyen veya tolere edemeyen, malnütre ya da riskli, kritik olmayan HD hastasına intradiyalitik PN (IDPN). IDPN ONS’ye üstün değildir; danışmanlık ve ONS denenmeden yaygın kullanımı uygun değildir.','A','ren'],
+['Oral alımla makrobesin gereksiniminin en az %70’ine ulaşamayan kritik ve kritik olmayan hastaya EN, PN veya EN + PN.','A','ren'],
+['Her yatan ABH/AKD ve KBH hastası, özellikle YBÜ’de &gt;48 saat kalanlar, malnütrisyon açısından taranmalı.','GPP','ren'],
+['Özgün araç doğrulanana dek riskli her hastada genel beslenme değerlendirmesi.','GPP','ren'],
+['Tarama araçları: MUST’un duyarlılığı düşüktür; NRS-2002 SGA ile tanımlanan malnütrisyonu yeterince saptar ve kötü sonucu öngörür; Renal iNUT yatan böbrek hastası için geliştirilmiştir (dış validasyon bekliyor).','UI','ren']]},
+{h:'Vücut kompozisyonu',r:[
+['Tanı ve izlemde antropometri yerine vücut kompozisyonu değerlendirmesi tercih edilmeli.','B','ren'],
+['Koopere hastada kas fonksiyonu el sıkma gücüyle değerlendirilmeli.','B','ren'],
+['Kuadriseps USG yatak başı, radyasyonsuz ve hızlı sıvı kaymalarından az etkilenir; BIA sıvı yükünde yanıltıcıdır (RRT sonrası yağsız kütle ≈%5 daha düşük ölçülür). Başka nedenle çekilmiş BT’de L3 kas alanı kullanılabilir.','UI','ren'],
+['Ağırlık ve BMI (çok düşük değilse, örn. &lt;18 kg/m²) ve serum albümin tek başına beslenme göstergesi değildir; albümin negatif akut faz reaktanıdır.','UI','ren']]},
+{h:'Enerji',r:[
+['Kalori dozunu belirlemek ve yetersiz/aşırı beslemeden kaçınmak için indirekt kalorimetri.','B','ren'],
+['IC CRRT sırasında yapılabilir (efluentle CO₂ kaybı ≈26 mL/dk sınırlamasıyla); aralıklı diyalizden sonra en az 2 saat beklenmeli.','0','ren'],
+['Klinik durum değiştikçe IC tekrarlanmalı.','GPP','ren'],
+['IC ile gerçek substrat kullanımına göre lipit artırılıp karbonhidrat azaltılabilir (ABH’de karbonhidrat oksidasyonu azalır, lipit oksidasyonu artar).','0','ren'],
+['Ölçülen REE’ye RRT için düzeltme faktörü eklenmemeli.','B','ren'],
+['IC yoksa genel başlangıç noktası 20–30 kcal/kg/gün; düşük protein diyetini sürdüren, stres faktörü olmayan kritik olmayan KBH’de 30–35 kcal/kg/gün.','UI','ren']]},
+{h:'Protein',r:[
+['Protein reçetesi yalnızca ağırlık temelli katsayılar yerine tercihen protein katabolik hızına (PCR) göre yönlendirilmeli.','GPP','ren'],
+['Pozitif azot dengesi sağlamak için aşırı besleme yapılmamalı (40–60 kcal/kg aşırı besleme nPCR’yi artırır, azot dengesini kötüleştirir).','B','ren'],
+['Kritik hastada RRT başlangıcını önlemek/geciktirmek için protein azaltılmamalı.','A','ren'],
+['Kısıtlı protein (≤0,7 g/kg/gün) yalnızca katabolik olmayan, RRT almayan metabolik olarak stabil hastada (ilaç/kontrast ilişkili izole ABH gibi) düşünülebilir.','GPP','ren'],
+['Düşük protein diyetindeki KBH hastası akut hastalık nedeniyle yatıyorsa bu diyette tutulmamalı.','GPP','ren'],
+['CRRT/PIRRT ile günde 10–15 (–20) g amino asit ve 5–10 g peptit/protein kaybedilir; toplam azot kaybı ≈25 g/gün olabilir. Uzamış CRRT’de negatif azot dengesinde 2,0 g/kg hedefi istenebilir (kılavuzun önerdiği üst sınır 1,7).','UI','ren']]},
+{h:'Mikrobesinler',r:[
+['Eser elementler izlenmeli ve desteklenmeli; selenyum, çinko ve bakıra özel dikkat.','B','ren'],
+['Suda çözünen vitaminler izlenmeli ve desteklenmeli; C vitamini, folat ve tiamine özel dikkat.','B','ren'],
+['CRRT efluentiyle günlük kayıp: C vitamini ≈68 mg, folat ≈0,3 mg, tiamin ≈4 mg. C vitamini için 100 mg/gün önerilmiştir. CRRT &gt;2 hafta sürerse kan bakırı ölçülmeli; ≈3 mg/gün IV bakır önerilmiştir.','UI','ren'],
+['Standart PN dozları (selenyum 75 µg, çinko 50 mg/gün’e kadar) HD hastasında düzeyleri normalleştirmeyebilir.','UI','ren']]},
+{h:'Formül ve özel besinler',r:[
+['Renal hastalığa özgü EN/PN formülü her hastada rutin kullanılmamalı; bireyselleştirilmeli.','B','ren'],
+['Formül, en doğru dozlama için kalori/protein oranına göre seçilmeli.','B','ren'],
+['Elektrolit ve sıvı dengesizliği olan seçilmiş hastada elektrolit içeriği düşük, konsantre renal formül tercih edilebilir (standart 40–60 g protein/L; renal 70–80 g/L).','GPP','ren'],
+['Rutin omega-3 PUFA desteği veya omega-3’lü PN için yeterli kanıt yok.','GPP','ren'],
+['Kritik ABH/KBH hastasında yüksek doz parenteral glutamin verilmemeli.','A','ren']]},
+{h:'Glisemi ve elektrolitler',r:[
+['Serum glukozu 140–180 mg/dL arasında tutulmalı.','A','ren'],
+['Hipoglisemi riski nedeniyle sıkı kontrol (80–110 mg/dL) hedeflenmemeli.','A','ren'],
+['RRT alan hastada elektrolit bozuklukları sıktır, yakından izlenmeli (hipofosfatemi %60–80, hipomagnezemi %60–65, hipokalemi ≈%25).','A','ren'],
+['RRT sırasında elektrolit bozukluklarını önlemek için potasyum (4 mEq/L), fosfat ve magnezyum içeren diyaliz/replasman solüsyonları kullanılmalı.','B','ren']]}],
+notes:[['Çelişki: C vitamini dozu','ESPEN PN 2009 (TR) ABY’de sekonder oksaloz nedeniyle C vitamininin 30–50 mg/gün’ü aşmamasını önerir; ESPEN Böbrek 2021 CRRT kayıpları için 100 mg/gün; ESPEN Mikrobesin 2022 CRRT’de 2–3 g/gün IV replesyon dozu (GPP, kanıt düzeyi 4) verir. Uzamış CRRT’de güncel kılavuzlar kaybın yerine konmasından yanadır; oksalat riski bireysel değerlendirilmelidir.'],
+['Kapsam boşluğu','Stabil ayaktan KBH (evre 3–5, diyaliz öncesi düşük protein ± ketoanalog), PD ve böbrek nakli hedefleri bu defterdeki kaynaklarda yer almıyor. Bu başlıklar için KDOQI 2020 beslenme kılavuzunun deftere eklenmesi uygun olur.']]};
+
+M.karaciger={e:'Organ ve hastalık',t:'Karaciğer hastalığı',lede:'Siroz, akut karaciğer yetmezliği, ağır alkolik hepatit, MASLD (kılavuzda NAFLD/NASH) ve karaciğer nakli.',src:['liv','icu'],
+tbl:{h:'Hızlı hedefler',head:['Durum','Enerji (kcal/kg/gün)','Protein (g/kg/gün)'],rows:[
+['Siroz, malnütrisyon yok','1,3 × REE (≈30–35)','1,2 (B)'],
+['Siroz, malnütre/sarkopenik','30–35 (B)','1,5 (B)'],
+['Obez siroz','Artırılmaz (GPP)','—'],
+['Obez NASH/siroz + akut hastalık (EN/PN)','25 / ideal ağırlık (GPP)','2,0–2,5 / ideal ağırlık'],
+['Ağır alkolik hepatit','35–40','1,2–1,5'],
+['Karaciğer nakli/cerrahi (pre ve postop)','30–35 (GPP)','1,2–1,5'],
+['Protein intoleransı','—','Bitkisel protein veya BCAA 0,25 g/kg (B)']]},
+sec:[
+{h:'Genel ilkeler',r:[
+['Karaciğer hastası valide bir araçla taranmalı; sirozda RFH-NPT, NRS-2002’den daha duyarlıdır.','B','liv'],
+['BIA faz açısı veya el sıkma gücü mortalite riskini değerlendirmeye olanak tanır.','S','liv'],
+['NASH, siroz ve nakilde sarkopeni araştırılmalı.','B','liv'],
+['Sarkopeni tanısında radyolojik yöntemler (DXA veya başka nedenle çekilmiş BT/MR’da L3 kas alanı).','B','liv'],
+['ALF, ASH ve sirozda REE genellikle artmıştır; NAFLD’de normaldir.','S','liv'],
+['Bireyler arası değişkenlik nedeniyle REE mümkünse IC ile ölçülmeli.','GPP','liv'],
+['Sedanter kronik karaciğer hastasında toplam enerji 1,3 × REE.','B','liv']]},
+{h:'Siroz',r:[
+['Malnütre olmayan kompanse sirozda protein 1,2 g/kg/gün.','B','liv'],
+['Malnütre ve/veya sarkopenik sirozda protein 1,5 g/kg/gün; 30–35 kcal/kg/gün.','B','liv'],
+['Aşırı kilolu/obez sirozda enerji alımı artırılmamalı.','GPP','liv'],
+['Hepatik ensefalopatide protein kısıtlanmamalı; protein katabolizmasını artırır.','B','liv'],
+['Protein “intoleransı” olan hastada bitkisel protein veya oral BCAA 0,25 g/kg/gün.','B','liv'],
+['İleri sirozda olaysız sağkalım ve yaşam kalitesi için uzun süreli oral BCAA desteği.','B','liv'],
+['Açlık süreleri kısaltılmalı: günde 3–5 öğün ve geç akşam atıştırmalığı (gece ONS’nin gündüze göre vücut proteini üzerine etkisi daha fazla).','B','liv'],
+['Asitte ılımlı sodyum kısıtlaması (≈60 mmol/gün) besin alımını düşürme riskine karşı tartılmalı; lezzet korunmalı.','GPP','liv'],
+['Mikrobesin eksiklikleri (tiamin, D vitamini, çinko, A vitamini) beklenmeli; çinko ve A vitamini disgözüyü düzelterek alımı artırabilir. İlk 2 hafta liberal destek pragmatik bir yaklaşımdır.','UI','liv'],
+['Oral beslenemeyen veya hedefe ulaşamayan sirozda EN.','B','liv'],
+['Oral ve/veya EN etkisiz ya da uygulanamazsa PN.','B','liv'],
+['Özofagus varisi ince çaplı nazogastrik tüp için kesin kontrendikasyon değildir.','0','liv'],
+['PEG asit ve varis nedeniyle komplikasyon riski yüksek olduğundan yalnızca istisnai durumlarda (ağır koagülopati INR &gt;1,5, trombosit &lt;50.000/mm³ ve ağır asit kontrendikasyon).','0','liv']]},
+{h:'Akut karaciğer yetmezliği',r:[
+['Karbonhidrat, protein ve lipit metabolizmasında ağır bozukluk (hipoglisemi, hiperamonyemi, hiperaminoasidemi) beklenmeli.','S','liv'],
+['Öksürük ve yutma refleksi korunan hafif ensefalopatide oral beslenme; hedefe ulaşılamazsa ONS.','GPP','liv'],
+['Arteriyel amonyak çok yüksek (&gt;150 µmol/L) ve beyin ödemi riski olan hiperakut hastada protein 24–48 saat ertelenebilir; başlandığında amonyak izlenmeli.','GPP','liv'],
+['Oral beslenemeyen ALF hastasına NG/NJ tüple EN, ensefalopati derecesinden bağımsız düşük dozla başlanır.','GPP','liv'],
+['Standart enteral formül kullanılabilir.','GPP','liv'],
+['Oral/EN ile yeterli beslenemeyende ikinci basamak PN.','GPP','liv']]},
+{h:'Ağır alkolik hepatit (ASH)',r:[
+['Hedef: 35–40 kcal/kg/gün ve 1,2–1,5 g protein/kg/gün.','UI','liv'],
+['Oral alım yetersizse ONS birinci basamak; geç akşam veya gece takviyesi şeklinde.','GPP','liv'],
+['Normal gıda ve/veya ONS ile kalori gereksinimini karşılayamayan ağır ASH’de sağkalım ve enfeksiyon için EN.','B','liv'],
+['Standart, tercihen yüksek enerji yoğunluklu (≥1,5 kcal/mL) formül.','GPP','liv'],
+['Gece açlığı dahil &gt;12 saat aç kalacak hastaya 2–3 g/kg/gün IV glukoz; açlık &gt;72 saat sürerse tam PN.','GPP','liv'],
+['Eser element ve vitamin eksikliği beklenmeli; Wernicke önlemi için PN/glukozdan önce tiamin; PN’nin ilk gününden vitamin, elektrolit ve eser element.','GPP','liv']]},
+{h:'MASLD (kılavuzda NAFLD/NASH)',r:[
+['Aşırı kilolu/obez NASH’ta kilo kaybı ve artmış fiziksel aktivite içeren yoğun yaşam tarzı müdahalesi birinci basamak.','A','liv'],
+['Steatoz ve karaciğer biyokimyası için %7–10, fibrozis için &gt;%10 kilo kaybı.','A','liv'],
+['Makrobesin bileşiminden bağımsız hipokalorik diyet.','A','liv'],
+['Steatoz ve insülin duyarlılığı için Akdeniz diyeti.','B','liv'],
+['Diyabetik olmayan, histolojik kanıtlı NASH’ta α-tokoferol 800 IU/gün.','B','liv'],
+['Sirozu olmayan, yaşam tarzı müdahalesi başarısız obez hastada bariatrik cerrahi önerilmeli.','B','liv'],
+['Obez NASH + araya giren akut hastalıkta EN/PN: 25 kcal/kg ideal ağırlık ve 2,0–2,5 g protein/kg ideal ağırlık.','GPP','liv']]},
+{h:'Karaciğer nakli',r:[
+['Elektif cerrahi veya nakil listesindeki siroz hastası erken taranıp malnütrisyon tedavi edilmeli.','B','liv'],
+['Preop dönemde ERAS ile gereksiz açlık önlenmeli (berrak sıvı ameliyattan 2 saat öncesine kadar).','GPP','liv'],
+['Preop ve akut postop dönem sonrası 30–35 kcal/kg/gün, 1,2–1,5 g protein/kg/gün; obezde 25 kcal/kg ideal ağırlık ve 2,0–2,5 g/kg ideal ağırlık.','GPP','liv'],
+['Erişkinde preop standart rejim; BCAA veya immün güçlendirici rejimler üstün değil.','A','liv'],
+['Nakil sonrası 12–24 saat içinde normal gıda ve/veya EN; erken EN için NG/NJ tüp.','B','liv'],
+['Enteral formülle birlikte seçilmiş probiyotikler enfeksiyonu azaltır.','B','liv'],
+['Oral/EN mümkün değilse beslememek yerine PN.','B','liv']]}]};
+
+M.ibh={e:'Organ ve hastalık',t:'İnflamatuvar barsak hastalığı',lede:'Crohn hastalığı ve ülseratif kolitte gereksinimler, mikrobesinler, primer beslenme tedavisi, PN ve perioperatif yaklaşım.',src:['ibd','sur'],sec:[
+{h:'Tarama ve gereksinimler',r:[
+['IBH hastası tanıda ve sonrasında düzenli olarak malnütrisyon açısından taranmalı; belgelenmiş malnütrisyon tedavi edilmeli.','GPP','ibd'],
+['Enerji gereksinimi genellikle sağlıklı popülasyona benzerdir; zor olgularda IC + fiziksel aktivite değerlendirmesi.','GPP','ibd'],
+['Aktif hastalıkta protein 1,2–1,5 g/kg/gün.','GPP','ibd'],
+['Remisyonda protein ≈1 g/kg/gün.','GPP','ibd']]},
+{h:'Mikrobesinler',r:[
+['Demir eksikliği anemisinde demir desteği; hedef anemiyi düzeltmek ve depoları doldurmak.','B','ibd'],
+['Klinik olarak inaktif hastalık, hafif anemi ve önceki intolerans yoksa oral demir birinci basamak.','B','ibd'],
+['Aktif hastalık, oral demir intoleransı, Hb &lt;100 g/L veya ESA gereksiniminde IV demir birinci basamak.','B','ibd'],
+['Tanı: aktif hastalık yokken ferritin &lt;30 µg/L; inflamasyonda ferritin 100 µg/L’ye kadar demir eksikliği ile uyumlu olabilir.','UI','ibd'],
+['&gt;20 cm distal ileum rezeksiyonu veya belgelenmiş eksiklikte B12 (1000 µg IM; eksiklikte 1 hafta gün aşırı, sonra ömür boyu aylık).','B','ibd'],
+['Sülfasalazin veya metotreksat alanlara profilaktik folik asit (metotreksatta haftada 5 mg veya 5 gün/hafta 1 mg).','B','ibd'],
+['Aktif hastalık, kortikosteroid veya şüpheli hipovitaminozda 25(OH)D izlenmeli; gerekirse kalsiyum/D vitamini.','B','ibd'],
+['Gebe IBH hastasında demir ve folat düzenli izlenmeli; folik asit 300–400 µg/gün.','GPP','ibd']]},
+{h:'Primer beslenme tedavisi',r:[
+['Genel olarak önerilebilecek bir “IBH diyeti” yoktur.','GPP','ibd'],
+['Çocuk ve adölesanda hafif aktif Crohn’da eksklüzif EN remisyon indüksiyonunda birinci basamak.','0','ibd'],
+['Çocukta hafif-orta Crohn’da Crohn eliminasyon diyeti + parsiyel EN, eksklüzif EN’ye alternatif.','B','ibd'],
+['Erişkinde hafif-orta aktif Crohn’da EN ile veya EN’siz Crohn eliminasyon diyeti düşünülebilir.','0','ibd'],
+['Erişkin ve çocukta ülseratif kolitte primer beslenme tedavisi (EN veya PN) önerilmez.','B','ibd'],
+['Ağır ülseratif kolitte destekleyici EN güvenlidir.','GPP','ibd'],
+['Obstrüktif semptomlu darlıkta kıvamı uyarlanmış diyet veya darlık distaline uzanan tüple eksklüzif EN.','0','ibd'],
+['Remisyonda süren fonksiyonel semptomlarda düşük FODMAP diyeti yarar sağlayabilir.','UI','ibd']]},
+{h:'PN ve stoma',r:[
+['PN: oral/EN yeterli değilse (disfonksiyonel GİS, kısa barsak), tüp yerleştirilemeyen obstrüksiyonda veya anastomoz kaçağı/yüksek debili fistülde.','GPP','ibd'],
+['Ülseratif kolitte PN, başka şekilde etkin beslenemeyen hasta dışında kullanılmaz.','0','ibd'],
+['Yüksek debili jejunostomi/ileostomide çıkış ve idrar sodyumu izlenmeli; hipotonik sıvı azaltılmalı, salin solüsyonları artırılmalı, hipertonik sıvılar da sınırlanmalı.','0','ibd'],
+['Günlerce beslenemeyen hastada refeeding önlemleri: özellikle fosfat ve tiamin.','0','ibd']]},
+{h:'Perioperatif',r:[
+['Elektif cerrahide ERAS protokolü uygulanabilir.','0','ibd'],
+['Gece yarısından itibaren açlık uygulanmamalı.','B','ibd'],
+['Malnütrisyon saptanırsa cerrahi mümkünse 7–14 gün ertelenip yoğun beslenme desteği verilmeli.','B','ibd'],
+['Crohn hastasında cerrahi sonrası erken beslenme desteği postoperatif komplikasyonları azaltır.','B','ibd']]},
+{h:'Probiyotik, prebiyotik ve egzersiz',r:[
+['Crohn’da (aktif, remisyon, postop nüks) probiyotik önerilmez.','B','ibd'],
+['Hafif-orta aktif ülseratif kolitte 5-ASA tolere edilmiyorsa seçilmiş probiyotikler alternatif olabilir.','0','ibd'],
+['Poşitin önlenmesinde çok suşlu probiyotikler düşünülebilir.','0','ibd'],
+['Crohn’da prebiyotik önerilmez.','B','ibd'],
+['Ülseratif kolitte rutin prebiyotik önerilemez.','0','ibd'],
+['Tüm hastalarda dayanıklılık egzersizi; kas kütlesi/performansı düşükse direnç egzersizi.','GPP','ibd']]}]};
+
+M.kanser={e:'Organ ve hastalık',t:'Kanser',lede:'ESPEN pratik kanser kılavuzu öneri gücünü “güçlü/zayıf” olarak bildirir.',src:['can'],sec:[
+{h:'Tarama ve gereksinimler',r:[
+['Tanıdan itibaren besin alımı, kilo değişimi ve BMI düzenli olarak değerlendirilmeli.','G','can'],
+['Tarama anormalse alım, beslenmeyi etkileyen semptomlar, kas kütlesi, fiziksel performans ve sistemik inflamasyonun objektif değerlendirmesi.','G','can'],
+['TEE ölçülmüyorsa sağlıklı bireye benzer kabul edilir: 25–30 kcal/kg/gün.','G','can'],
+['Protein &gt;1 g/kg/gün, mümkünse 1,5 g/kg/gün’e kadar.','G','can'],
+['Vitamin ve mineraller önerilen günlük miktarlar düzeyinde; eksiklik yoksa yüksek doz mikrobesin kullanılmamalı.','G','can'],
+['İnsülin direnci olan kilo kaybeden hastada yağdan gelen enerjinin karbonhidrata oranı artırılmalı.','G','can']]},
+{h:'Beslenme müdahaleleri',r:[
+['Yiyebilen malnütre/riskli hastada diyet danışmanlığı, semptom tedavisi ve ONS.','G','can'],
+['Enerji alımını kısıtlayan diyetler (ketojenik, açlık) kullanılmamalı.','G','can'],
+['Beslenme kararı verildiyse oral yetersizse EN; EN yetersiz/uygulanamazsa PN. Tıbbi beslenme endikasyonu: &gt;1 hafta gereksinimin &lt;%50’si veya &gt;2 hafta %50–75’i.','G','can'],
+['Uzun süre ağır kısıtlı alımda beslenme birkaç günde yavaş artırılmalı; refeeding önlemleri alınmalı.','G','can'],
+['Kronik yetersiz alım/kontrol edilemeyen malabsorpsiyonda uygun hastaya ev EN veya PN. Prognozu 2 aydan kısa hastada PN’nin riskleri yararını aşar.','G','can'],
+['Fiziksel aktivite sürdürülmeli/artırılmalı (orta yoğunluk, haftada 3 seans, 10–60 dk).','G','can'],
+['Aerobiğe ek bireyselleştirilmiş direnç egzersizi.','Z','can']]},
+{h:'Farmakolojik ajanlar',r:[
+['İleri hastalıkta iştah için kısa süreli (1–3 hafta) kortikosteroid; kas yıkımı, insülin direnci ve enfeksiyon riskine dikkat.','Z','can'],
+['İleri hastalıkta iştah için progestinler; tromboemboli riskine dikkat.','Z','can'],
+['Kemoterapi alan, kilo kaybeden ileri evre hastada balık yağı/uzun zincirli n-3 yağ asitleri (ibrutinib alanlarda kaçınılmalı).','Z','can'],
+['Kabızlık tedavi edildikten sonra erken doymada prokinetik (metoklopramid SSS, domperidon ritim yan etkisine dikkat).','Z','can'],
+['BCAA, NSAİİ, androjenik steroidler ve kannabinoidler için yeterli tutarlı kanıt yok.','UI','can']]},
+{h:'Onkolojik tedavi dönemleri',r:[
+['Küratif veya palyatif cerrahide ERAS; her hasta taranmalı, riskliyse ek destek.','G','can'],
+['Malnütre/riskli cerrahi hastaya yatışta ve taburculuk sonrası beslenme desteği.','G','can'],
+['Üst GİS kanser rezeksiyonunda (geleneksel bakım) oral/enteral immünonütrisyon.','G','can'],
+['Radyoterapide (özellikle baş-boyun, toraks, GİS) bireysel danışmanlık ve/veya ONS ile yeterli alım.','G','can'],
+['Disfaji taranmalı, yönetilmeli; EN sırasında yutma fonksiyonunu koruma eğitimi.','G','can'],
+['Ağır radyasyon mukoziti veya obstrüktif baş-boyun/toraks tümöründe NG veya perkütan tüple EN.','G','can'],
+['Radyoterapide PN genel tedavi değildir; yalnızca ağır radyasyon enteriti veya malabsorpsiyonda.','G','can'],
+['Antikanser ilaç tedavisinde yeterli alım ve fiziksel aktivite; küratif tedavide danışmanlık + ONS yetersizse ek EN, o da yetersizse PN.','G','can'],
+['Yüksek doz kemoterapi ve kök hücre naklinde aktivite ve alım korunmalı.','G','can'],
+['Ağır mukozit, inatçı kusma, ileus, ağır malabsorpsiyon, uzamış diyare veya semptomatik GİS GVHD yoksa EN, PN’ye tercih edilir.','Z','can']]},
+{h:'İleri evre ve yaşam sonu',r:[
+['Beslenme müdahalesi ileri evrede prognoz, beklenen yaşam kalitesi/sağkalım yararı ve yük hasta ile birlikte tartılarak verilmeli.','G','can'],
+['Ölmekte olan hastada konfor esas; parenteral hidrasyon ve beslenme çoğu hastada yarar sağlamaz. Akut konfüzyonda dehidrasyonu dışlamak için kısa süreli hidrasyon denenebilir.','G','can']]}]};
+
+M.kbs={e:'Organ ve hastalık',t:'Kısa barsak ve kronik intestinal yetmezlik',lede:'Kısa barsak sendromu (KBS) tipleri, diyet, sıvı-elektrolit, ilaç tedavisi ve evde PN.',src:['cif','hpn','pn'],
+tbl:{h:'KBS anatomik tipleri',head:['Tip','Anatomi','Sıklık','Evde PN’den ayrılma olasılığı','Eşik kalan ince barsak'],rows:[
+['Tip 1','Uç jejunostomi/ileostomi, kolon devamsız','%60','≈%20','&gt;100 cm'],
+['Tip 2','Jejunokolik anastomoz','%31','≈%40','&gt;65 cm (+ kolonun &gt;%50’si)'],
+['Tip 3','Jejunoileal anastomoz, ileoçekal valf ve kolon sağlam','%9','≈%80','&gt;30 cm']]},
+sec:[
+{h:'Tanım',r:[
+['KBS: Treitz bağından itibaren devamlılığı olan ince barsak &lt;200 cm. Uzunluk &gt;200 cm olsa da klinik tablo varsa “fonksiyonel KBS”.','S','cif']]},
+{h:'Diyet',r:[
+['Deneyimli diyetisyen danışmanlığı, mümkünse metabolik denge ölçümleriyle desteklenmeli.','GPP','cif'],
+['Kolonu korunmuş hastada diyet kompleks karbonhidrattan zengin, mono/disakkaritten ve yağdan fakir olabilir (kolonda kısa zincirli yağ asidi fermantasyonu ≈1000 kcal/gün sağlayabilir).','0','cif'],
+['Kolonu korunmuşta yüksek MCT içeriği toplam enerji emilimine sınırlı katkı sağlar.','B','cif'],
+['Kolonu olmayan hastada yağ:karbonhidrat oranı serbest, mono/disakkarit düşük.','UI','cif'],
+['Kolon korunmuş hastada uzun zincirli yağ asitleri kalsiyum/magnezyumu bağlayıp oksalat emilimini artırır: böbrek taşı riski. D-laktik asidoza dikkat.','UI','cif']]},
+{h:'Sıvı ve elektrolit',r:[
+['Tip 1 KBS (uç jejunostomi) tuzu serbest kullanabilir, öğünlerle birlikte oral sıvıyı kısıtlar.','GPP','cif'],
+['Sınırda dehidrasyon veya sodyum kaybında stoma sodyum kaybını karşılamak için izotonik, yüksek sodyumlu oral rehidrasyon solüsyonu (stoma sıvısında Na ≈100 mmol/L; optimal karışım ≈120 mmol/L NaCl + 30 mmol/L glukoz).','0','cif'],
+['Net sekresyonlu yüksek debili jejunostomide düşük sodyumlu hipotonik (su, çay, kahve, alkol) ve hipertonik (meyve suyu, kola) sıvılar sınırlanmalı.','GPP','cif']]},
+{h:'İlaç tedavisi',r:[
+['H2 reseptör antagonisti veya PPI, özellikle ilk 6 ayda ve dışkı/stoma çıkışı &gt;2 L/gün olanlarda.','0','cif'],
+['Bireysel hastada uzun dönem de kullanılabilir.','GPP','cif'],
+['Oktreotid kısa dönemde, konvansiyonel tedaviye rağmen sıvı yönetimi sorunlu yüksek debili jejunostomide kullanılabilir; sıvı retansiyonu ve adaptasyona olumsuz etki açısından izlenmeli.','GPP','cif'],
+['Stomalı KBS hastasında dışkı ağırlığı ve sodyum atılımını azaltmak için oral loperamid; bağımlılık yapmadığı için opiatlara tercih edilir.','A','cif'],
+['Post-cerrahi adaptasyondan sonra (genellikle son rezeksiyondan 12–24 ay sonra) PN bağımlılığı süren stabil hastada barsak büyüme faktörleri düşünülmeli. Teduglutid (GLP-2 analoğu) etkinliği RKÇ ile gösterilmiştir (0,05 mg/kg/gün SK).','B','cif']]},
+{h:'Evde PN',r:[
+['Geri dönüşlü veya kalıcı kronik intestinal yetmezlikte birincil, hayat kurtarıcı tedavi.','B','hpn'],
+['Tıbbi ve cerrahi deneyimi olan intestinal yetmezlik/rehabilitasyon merkezine erken sevk.','GPP','cif'],
+['Uzun dönemde (&gt;6 ay) tünelli veya tam implante kateter; tek lümen tercih.','GPP','hpn'],
+['Süre &lt;6 ay bekleniyorsa PICC kullanılabilir.','0','hpn'],
+['Sağ taraf ve üst vena kava (internal juguler/subklavyen) tercih; uç sağ atriyum–SVC bileşkesinde.','B','hpn'],
+['Uzun dönem kateter kilidinde heparin yerine %0,9 NaCl.','B','hpn'],
+['CRBSI önlemede ek strateji olarak taurolidin kilit.','B','hpn'],
+['Pansuman ve cilt antisepsisinde %0,5–2 alkollü klorheksidin; sıkı aseptik teknik.','A','hpn'],
+['Ev PN’de enerji normalde 25–30 kcal/kg/gün; stressiz erişkinde amino asit 0,8–1,0 g/kg/gün; her g azot için 100–150 kcal non-protein enerji.','UI','pn'],
+['Soya bazlı lipit 1 g/kg/gün’ü aşmamalı; daha fazlası gerekirse zeytin yağı, MCT, balık yağı içeren emülsiyonlar.','B','cif'],
+['IFALD önleme: oral/enteral alımı sürdür, siklik PN, aşırı beslemeden kaçın, soya lipiti &lt;1 g/kg/gün, hepatotoksik etkenlerden kaçın. Glukoz &gt;7 mg/kg/dk risk faktörüdür; yağ:glukoz enerji oranı 40:60’ı aşmamalı.','B','cif']]}]};
+
+M.enteral={e:'Destek yolları',t:'Enteral beslenme',lede:'Endikasyon, kontrendikasyon, tüp seçimi, formül ve uygulama ilkeleri.',src:['en','sur','icu','ger','ren','pol'],sec:[
+{h:'Endikasyon ve kontrendikasyon',r:[
+['3 gün içinde tam doz oral beslenmeye geçmesi beklenmeyen tüm YBÜ hastalarına EN.','C','en'],
+['Kontrendikasyon yoksa (intestinal obstrüksiyon/ileus, ağır şok, intestinal iskemi) enteral yol tercih edilmeli.','C','en'],
+['Enerji gereksiniminin &lt;%60’ı enteral yolla karşılanabiliyorsa PN ile kombinasyon düşünülmeli (2006). Güncel cerrahi kılavuz: &gt;7 gün &lt;%50 ise EN + PN.','C','en'],
+['YBÜ 2023: EN’nin ertelenmesi gereken durumlar ve erken EN listeleri için Kritik hasta bölümüne bakın.','UI','icu']]},
+{h:'Tüp seçimi',r:[
+['Beklenen süre &gt;4 haftaysa (örn. ağır kafa travması) perkütan tüp (PEG).','C','en'],
+['Nörolojik disfajili yaşlıda uzun dönem destekte PEG nazogastrik tüpe tercih edilir.','A','en'],
+['PEG yerleştirirken antibiyotik profilaksisi.','A','en'],
+['Majör abdominal cerrahide nazojejunal tüp veya iğne kateter jejunostomi; proksimal GİS anastomozunda tüp anastomoz distaline.','A','en'],
+['YBÜ’de standart gastrik erişim; aspirasyon riski yüksek veya prokinetiğe dirençli intoleransta postpilorik.','GPP','icu'],
+['Sirozda özofagus varisi ince NG tüp için kesin kontrendikasyon değil; PEG yalnızca istisnai.','0','liv']]},
+{h:'Formül',r:[
+['Hastaların çoğunda tam protein (polimerik) formül uygundur; peptit bazlı formüllerin klinik avantajı gösterilmemiştir.','C','en'],
+['Tüple beslenen yaşlıda diyet lifi barsak fonksiyonunu normale döndürmeye katkı sağlar.','A','en'],
+['Böbrek hastalığında renal formül rutin değil; kalori/protein oranına göre seçim; sıvı/elektrolit sorununda konsantre renal formül.','B','ren'],
+['YBÜ’de yüksek doz omega-3’lü formül bolus ve rutin verilmemeli.','B','icu']]},
+{h:'Uygulama',r:[
+['Postoperatif tüple beslenme düşük hızla (10–en fazla 20 mL/saat) başlanır; hedefe 5–7 günde ulaşılması zararlı değildir.','C','en'],
+['YBÜ’de bolus yerine sürekli EN (diyareyi azaltır).','B','icu'],
+['Gastrik rezidüel volüm &gt;500 mL/6 saat ise EN ertelenir, akut abdomen yoksa prokinetik; yerleşik EN’de sürekli GRV ölçümü gerekmeyebilir.','B','icu'],
+['Aspirasyon riskini azaltmak için yatak başı 30–45° yükseltilir; tüp ilaç uygulamalarının öncesinde ve sonrasında su ile yıkanır.','UI','en']]}]};
+
+M.parenteral={e:'Destek yolları',t:'Parenteral beslenme',lede:'Endikasyon, damar yolu, substrat dozları, izlem, kateter komplikasyonları ve karaciğer hastalığı.',src:['pn','icu','sur','hpn','cif','mic'],sec:[
+{h:'Endikasyon ve zamanlama',r:[
+['Postoperatif PN: EN mümkün değil veya tolere edilemiyorsa malnütre hastada; GİS fonksiyonunu bozan komplikasyonla ≥7 gün yeterli oral/enteral alamayacak hastada.','A','pn'],
+['Postoperatif destek gereken hastada ilk tercih EN veya EN + tamamlayıcı PN.','A','pn'],
+['3 gün içinde normal beslenmeye geçmesi beklenmeyen ve EN kontrendike/tolere edilemeyen hastada 24–48 saat içinde PN (2009).','C','pn'],
+['Güncel YBÜ önerisi: oral ve EN kontrendikeyse PN 3–7 gün içinde; EN tolerans stratejileri tükenmeden PN yok.','B','icu']]},
+{h:'Damar yolu ve torba',r:[
+['Yüksek osmolariteli tam destek PN için çoğunlukla santral venöz kateter gerekir.','C','pn'],
+['Periferik PN yalnızca kısa süre ve osmolaritesi 850 mOsm/L’yi aşmayan solüsyonlarla; tromboflebit izlenmeli.','C','pn'],
+['Periferik PN gereksinimi karşılamıyorsa santral yola geçilmeli.','C','pn'],
+['Evde PN kısa kanüllerle verilmemeli.','C','pn'],
+['Hepsi bir arada (tek torba) karışımlar.','B','pn']]},
+{h:'Substratlar',r:[
+['Günlük minimum karbonhidrat gereksinimi ≈2 g/kg.','B','pn'],
+['Hiperglisemi (glukoz &gt;10 mmol/L) önlenmeli.','B','pn'],
+['YBÜ’de glukoz 5 mg/kg/dk’yı aşmamalı.','GPP','icu'],
+['Dengeli amino asit karışımı ≈1,3–1,5 g/kg ideal ağırlık/gün, yeterli enerjiyle birlikte.','B','pn'],
+['IV lipit emülsiyonu (MCT içeren veya içermeyen LCT ya da karışımlar) 0,7–1,5 g/kg/gün, 12–24 saatte güvenle verilebilir.','B','pn'],
+['Saf soya yağı emülsiyonları yerine n-6 içeriği daha düşük (zeytin yağı, MCT, balık yağı içeren) emülsiyonlar tercih edilmeli.','C','pn'],
+['YBÜ’de non-nütrisyonel kaynaklar dahil lipit ≤1,5 g/kg/gün; PN alanda balık yağı 0,1–0,2 g/kg/gün verilebilir.','GPP','icu'],
+['Tüm PN uygulamaları günlük multivitamin ve eser element içermeli; Wernicke riskini azaltmak için glukozdan önce B1.','C','pn']]},
+{h:'İzlem',r:[
+['Glukoz, elektrolitler (K, Mg, P), üre, karaciğer ve böbrek fonksiyonları, trigliserid düzenli izlenmeli; malnütre hasta yeniden beslenirken fosfat, potasyum ve magnezyum yakından takip edilmeli.','C','pn'],
+['Mikrobesin ölçümüyle birlikte CRP de ölçülmeli.','B','mic']]},
+{h:'Kateter',r:[
+['Kateter giriş yerinde enfeksiyon veya kanıtlı kateter ilişkili kan dolaşımı enfeksiyonunda kateter çıkarılmalı, kılavuz telle değiştirilmemeli; tüm infüzyon setleri yenilenmeli.','C','pn'],
+['Ev PN’de taurolidin kilit, salin kilit, alkollü klorheksidin ve aseptik teknik için Kısa barsak bölümüne bakın.','UI','hpn']]},
+{h:'PN ilişkili karaciğer hastalığı',r:[
+['Yağ/glukoz enerji oranı 40:60’ı aşmamalı; lipit ≤1 g/kg/gün; her türlü aşırı beslemeden kaçınılmalı; glukoz &gt;7 mg/kg/dk ve sürekli PN risk faktörü; hat enfeksiyonları hızla kontrol edilmeli.','C','pn']]}]};
+
+M.mikro={e:'Destek yolları',t:'Mikrobesinler',lede:'PN ve EN’de günlük dozlar, yüksek gereksinim durumları, tiamin dozlaması ve inflamasyonda düzey yorumu.',src:['mic','cif','icu','ren'],
+tbl:{h:'Günlük dozlar (ESPEN Mikrobesin 2022)',head:['Mikrobesin','PN standart','PN yüksek gereksinim','EN (1500 kcal)','Not'],rows:[
+['Tiamin (B1)','≥2,5 mg (B)','100–200 mg','—','Acil/YBÜ yatışında 100–300 mg/gün IV'],
+['C vitamini','100–200 mg (GPP)','200–500 mg (kronik oksidatif stres, malabsorpsiyon)','—','Kritik hastalık ve CRRT replesyon dozu 2–3 g/gün IV'],
+['D₃ vitamini','200 IU (5 µg)','800–1000 IU','—','25(OH)D risk altındakilerde ölçülür'],
+['Çinko','3–5 mg (B)','6–12 mg (GİS/stoma kaybı)','≥10 mg (A)','Majör yanıkta 30–40 mg/gün'],
+['Selenyum','60–100 µg (B)','150–200 µg','50–150 µg (B)','Plazma &lt;0,4 µmol/L: 100 µg/gün başla; yanıkta ≈375 µg/gün IV'],
+['Bakır','0,3–0,5 mg (B)','0,5–1,0 mg','1–3 mg','Kolestazda azalt; eksiklik tedavisi 4–8 mg/gün'],
+['Demir','1 mg','1 mg','18–30 mg','—'],
+['Manganez','55 µg (A)','55 µg','2–3 mg (B)','PN’de birikim/nörotoksisite riski']]},
+sec:[
+{h:'Tiamin dozlama',r:[
+['Hafif eksiklik (ayaktan): 1 hafta 10 mg/gün, sonra en az 6 hafta 3–5 mg/gün.','UI','mic'],
+['Kronik diüretik tedavisi: 50 mg/gün oral önerilir.','UI','mic'],
+['Eksiklik riski: 100 mg × 3/gün IV.','UI','mic'],
+['Yüksek şüphe veya kanıtlı eksiklik: 200 mg × 3/gün IV.','UI','mic'],
+['Etiyolojisi belirsiz ensefalopati, Wernicke: 500 mg × 3/gün IV; kanıtlı eksiklikte idame 50–100 mg/gün oral.','UI','mic'],
+['Refeeding riski olan malnütre hastada PN başlamadan önce ek doz; ev PN’de en az 2,5 mg/gün.','B','mic']]},
+{h:'İnflamasyonda düzey yorumu',r:[
+['Mikrobesin analizleriyle eşzamanlı CRP ölçülmeli; inflamasyon etkisi genellikle CRP &gt;20 mg/L’de görülür, hs-CRP uygun değildir.','B','mic'],
+['Plazma selenyum CRP 10–40 mg/L’de %15–25, 41–80’de ≈%35, &gt;80’de ≈%50 düşer; düzeltilerek yorumlanmalı.','UI','mic'],
+['Bakır inflamasyonda artar (seruloplazmin pozitif akut faz reaktanı); yüksek CRP ile birlikte normal bakır tükenmeyi düşündürür. Bakır &lt;12 µmol/L + CRP &gt;20 mg/L: eksiklik olası; &lt;8 µmol/L: replesyon.','UI','mic'],
+['Çinko, selenyum, folat inflamasyonda düşer; ferritin ve bakır artar. B12 inflamasyondan etkilenmez.','UI','mic']]},
+{h:'Klinik bağlamlar',r:[
+['YBÜ’de kanıtlı eksiklik olmadan yüksek doz antioksidan verilmemeli.','A','icu'],
+['RRT kayıpları nedeniyle selenyum, çinko, bakır; C vitamini, folat ve tiamin izlenip desteklenmeli.','B','ren'],
+['&gt;2 hafta CRRT ağır bakır eksikliği nedeni olabilir; kan bakırı ölçülmeli.','UI','ren'],
+['Polimorbid hastada multivitamin yerine tam multivitamin + multi-eser element; PPI ile B12/demir, diüretikle tiamin eksikliği riski.','GPP','pol']]}]};
+
+M.kaynaklar={e:'Başvuru',t:'Kılavuzlar ve öneri dereceleri',lede:'Uygulamanın dayandığı 13 kaynak (NotebookLM “Klinik Beslenme Rehberi” defteri).',src:[],custom:true};
+
+/* ================= NAV ================= */
+const TITLES={profil:'Hasta profili',tarama:'Tarama skorları',gereksinim:'Enerji ve protein',['en-plan']:'EN planı',['pn-analiz']:'PN analizi',refeeding:'Refeeding riski',nonnut:'Non-nütrisyonel kalori',
+ayaktan:'Ayaktan ve taburculuk',yatan:'Yatan polimorbid',geriatri:'Geriatri',kritik:'Kritik hasta',cerrahi:'Cerrahi',bobrek:'Böbrek (ABH, KBH, RRT)',karaciger:'Karaciğer',ibh:'İnflamatuvar barsak',kanser:'Kanser',kbs:'Kısa barsak ve ev PN',enteral:'Enteral beslenme',parenteral:'Parenteral beslenme',mikro:'Mikrobesinler',kaynaklar:'Kılavuzlar'};
+const GROUPS=[['Hesaplayıcılar',['gereksinim','profil','tarama','en-plan','pn-analiz','refeeding','nonnut']],['Klinik ortam',['ayaktan','yatan','geriatri','kritik','cerrahi']],['Organ ve hastalık',['bobrek','karaciger','ibh','kanser','kbs']],['Destek yolları',['enteral','parenteral','mikro']],['Başvuru',['kaynaklar']]];
+
+function gradeBadge(g){return `<span class="g g-${g}" title="Öneri derecesi">${GL[g]||g}</span>`;}
+function renderRecs(r){return '<ul class="recs">'+r.map(x=>`<li>${gradeBadge(x[1])}<p>${x[0]}<span class="s">${SRC[x[2]]||''}</span></p></li>`).join('')+'</ul>';}
+function renderContent(){
+  const host=$('#contentMods');let html='';
+  Object.keys(M).forEach(id=>{const m=M[id];
+    html+=`<section class="mod" data-mod="${id}" hidden><header class="mod-h"><p class="eyebrow">${m.e}</p><h1>${m.t}</h1><p class="lede">${m.lede}</p>`+
+    (m.src.length?`<div class="srcs">${m.src.map(s=>`<span class="src">${SRC[s]}</span>`).join('')}</div>`:'')+`</header>`;
+    if(m.custom){html+=refsHTML();}
+    if(m.tbl){html+=`<div class="sec"><h2>${m.tbl.h}</h2><div class="tw"><table><thead><tr>${m.tbl.head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${m.tbl.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;}
+    (m.sec||[]).forEach(s=>{html+=`<div class="sec"><h2>${s.h}<span class="cnt">${s.r.length} öneri</span></h2>${renderRecs(s.r)}</div>`;});
+    (m.notes||[]).forEach(n=>{html+=`<div class="note"><b>${n[0]}.</b> ${n[1]}</div>`;});
+    html+='</section>';});
+  host.outerHTML=html;
+}
+function refsHTML(){
+  const legend=[['A','Güçlü kanıt; “shall”'],['B','Orta kanıt; “should”'],['0','Zayıf kanıt; “can/may”'],['GPP','İyi uygulama noktası; uzman görüşü'],['S','İfade (statement); öneri değil'],['C','2006/2009 rehberleri: düşük kanıt/uzman'],['G','Kanser kılavuzu: güçlü öneri'],['Z','Kanser kılavuzu: zayıf öneri'],['UI','Uygulama bilgisi; derece belirtilmemiş veya doğrulanamamış']];
+  const refs=[
+  'Singer P, Blaser AR, Berger MM, et al. ESPEN practical and partially revised guideline: Clinical nutrition in the intensive care unit. Clin Nutr. 2023;42:1671-89.',
+  'Fiaccadori E, Sabatino A, Barazzoni R, et al. ESPEN guideline on clinical nutrition in hospitalized patients with acute or chronic kidney disease. Clin Nutr. 2021;40:1644-68.',
+  'Bischoff SC, Bernal W, Dasarathy S, et al. ESPEN practical guideline: Clinical nutrition in liver disease. Clin Nutr. 2020;39:3533-62. doi:10.1016/j.clnu.2020.09.001',
+  'Bischoff SC, Bager P, Escher J, et al. ESPEN guideline on clinical nutrition in inflammatory bowel disease. Clin Nutr. 2023;42:352-79.',
+  'Muscaritoli M, Arends J, Bachmann P, et al. ESPEN practical guideline: Clinical nutrition in cancer. Clin Nutr. 2021;40:2898-913.',
+  'Wunderle C, Gomes F, Schuetz P, et al. ESPEN guideline on nutritional support for polymorbid medical inpatients. Clin Nutr. 2023;42:1545-68.',
+  'Volkert D, Beck AM, Cederholm T, et al. ESPEN practical guideline: Clinical nutrition and hydration in geriatrics. Clin Nutr. 2022;41:958-89.',
+  'Weimann A, Braga M, Carli F, et al. ESPEN practical guideline: Clinical nutrition in surgery. Clin Nutr. 2021;40:4745-61.',
+  'Berger MM, Shenkin A, Schweinlin A, et al. ESPEN micronutrient guideline. Clin Nutr. 2022;41:1357-424.',
+  'Pironi L, Cuerda C, Jeppesen PB, et al. ESPEN guideline on chronic intestinal failure in adults – Update 2023. Clin Nutr. 2023;42:1940-2021.',
+  'Pironi L, Boeykens K, Bozzetti F, et al. ESPEN practical guideline: Home parenteral nutrition. Clin Nutr. 2023;42:411-30.',
+  'ESPEN Enteral Nütrisyon Rehberi (2006), Türkçe çeviri.',
+  'ESPEN Parenteral Nütrisyon Rehberi (2009), Türkçe çeviri.'];
+  return `<div class="sec"><h2>Öneri dereceleri</h2><div class="legend">${legend.map(l=>`<div>${gradeBadge(l[0])}<span>${l[1]}</span></div>`).join('')}</div></div>
+  <div class="sec"><h2>Kaynaklar</h2><ol class="refs">${refs.map(r=>`<li>${r}</li>`).join('')}</ol>
+  <div class="note info">DOI yalnızca kaynak metninde doğrulanabilen kılavuz için verilmiştir; diğerlerinin DOI ve PMID bilgileri PubMed üzerinden eklenebilir.</div>
+  <div class="note"><b>Defter dışı ek bilgiler.</b> NRS-2002 bileşenleri polimorbid kılavuzundan; GLIM (2019), MNA-SF ve NICE CG32 refeeding kriterleri kılavuzlarda atıf yapılan standart araçlardır. Asit/ödem için %5/%10/%15 kuru ağırlık düzeltmesi EASL 2019 yaklaşımıdır. Prediktif denklemler (Harris-Benedict, Mifflin-St Jeor) yalnızca karşılaştırma amaçlıdır.</div></div>`;
+}
+
+function buildNav(){
+  let h='',o='';
+  GROUPS.forEach(g=>{h+=`<h4>${g[0]}</h4>`;o+=`<optgroup label="${g[0]}">`;g[1].forEach(id=>{h+=`<a href="#${id}" data-id="${id}">${TITLES[id]}</a>`;o+=`<option value="${id}">${TITLES[id]}</option>`;});o+='</optgroup>';});
+  $('#nav').innerHTML=h;$('#navSel').innerHTML=o;
+  $('#navSel').addEventListener('change',e=>{location.hash=e.target.value;});
+}
+let current='gereksinim';
+function show(id){
+  if(!document.querySelector(`section[data-mod="${id}"]`))id='gereksinim';
+  current=id;
+  $$('section.mod').forEach(s=>s.hidden=s.dataset.mod!==id);
+  $$('#nav a').forEach(a=>a.toggleAttribute('aria-current',a.dataset.id===id));
+  $$('#nav a').forEach(a=>{if(a.dataset.id===id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+  if(id!=='ara')$('#navSel').value=id;
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h){$('#q').value='';show(h);}});
+
+/* ================= PROFILE ================= */
+const PF=['p_age','p_sex','p_h','p_w','p_u','p_abwf','p_asc','p_ed'];
+function P(){
+  const age=num('p_age'),sex=$('#p_sex').value,h=num('p_h'),w=num('p_w'),u=num('p_u'),f=parseFloat($('#p_abwf').value),asc=parseFloat($('#p_asc').value),ed=parseFloat($('#p_ed').value);
+  const bmi=w/Math.pow(h/100,2);
+  const ibw=0.9*h-(sex==='E'?100:106);
+  const abw=w>ibw?ibw+(w-ibw)*f:w;
+  const dry=w*(1-(asc+ed)/100);
+  const wl=isFinite(u)&&u>0?(u-w)/u*100:NaN;
+  return {age,sex,h,w,u:isFinite(u)&&u>0?u:NaN,f,asc,ed,bmi,ibw,abw,dry,wl};
+}
+const BASIS={actual:'Aktüel',ibw:'İdeal',abw:'Düzeltilmiş',dry:'Kuru',usual:'Olağan/yatış öncesi'};
+function W(b,p){switch(b){case 'ibw':return p.ibw;case 'abw':return p.abw;case 'dry':return p.dry;case 'usual':return isFinite(p.u)?p.u:p.dry;default:return p.w;}}
+function bmiCat(b){if(b<16)return['Ağır zayıf','crit'];if(b<18.5)return['Zayıf','warn'];if(b<25)return['Normal','ok'];if(b<30)return['Fazla kilolu','warn'];return['Obez','crit'];}
+function renderProfile(){
+  const p=P();const c=bmiCat(p.bmi);
+  $('#outProfil').innerHTML=`<h3>Ağırlık özeti</h3><div class="sub">${fmt(p.age,0)} yaş · ${p.sex==='E'?'erkek':'kadın'} · ${fmt(p.h,1)} cm</div>
+  <div class="prow big thick"><span>BMI</span><span class="v">${fmt(p.bmi,1)}</span></div>
+  <div class="prow"><span>Sınıf</span><span class="v"><span class="tag ${c[1]}">${c[0]}</span></span></div>
+  <div class="prow"><b>Aktüel</b><span class="v">${fmt(p.w,1)} kg</span></div>
+  <div class="prow"><b>İdeal</b><span class="v">${fmt(p.ibw,1)} kg</span></div>
+  <div class="prow"><b>Düzeltilmiş</b> <span class="v">${fmt(p.abw,1)} kg</span></div>
+  <div class="prow"><b>Kuru</b><span class="v">${fmt(p.dry,1)} kg</span></div>
+  <div class="prow thick"><b>Olağan</b><span class="v">${isFinite(p.u)?fmt(p.u,1)+' kg':'—'}</span></div>
+  <div class="prow"><span>Kilo kaybı</span><span class="v">${isFinite(p.wl)?fmt(p.wl,1)+' %':'—'}</span></div>
+  <div class="pnote">İdeal = 0,9 × boy − ${p.sex==='E'?100:106}. Düzeltilmiş = ideal + (aktüel − ideal) × ${fmt(p.f,2)}${p.w<=p.ibw?' (aktüel ≤ ideal: aktüel kullanılır)':''}. Kuru = aktüel × (1 − %${p.asc+p.ed}).</div>`;
+  $('#ptChip').innerHTML=`Hasta: <b>${fmt(p.w,1)} kg</b> · ${fmt(p.h,0)} cm · BMI <b>${fmt(p.bmi,1)}</b> · ${fmt(p.age,0)} y`;
+  const o={};PF.forEach(id=>o[id]=document.getElementById(id).value);store('kbr_profile',o);
+}
+
+/* ================= SCREENING ================= */
+function renderNRS(){
+  const p=P();const pre1=p.bmi<20.5;$('#n_pre1').checked=pre1;$('#n_pre1t').textContent='(profil: '+fmt(p.bmi,1)+')';
+  const pre=pre1||$('#n_pre2').checked||$('#n_pre3').checked||$('#n_pre4').checked;
+  const a=+$('#n_nut').value,s=+$('#n_sev').value,age=p.age>=70?1:0,t=a+s+age;
+  let res,cls;
+  if(!pre){res='Ön tarama negatif: haftalık yeniden tarama';cls='ok';}
+  else if(t>=5){res='Yüksek risk (≥5)';cls='crit';}
+  else if(t>=3){res='Beslenme riski var (≥3)';cls='warn';}
+  else{res='Risk yok: haftalık yeniden tarama';cls='ok';}
+  $('#outNRS').innerHTML=`<h3>NRS-2002</h3><div class="sub">Toplam = beslenme + şiddet + yaş</div>
+  <div class="prow big thick"><span>Toplam skor</span><span class="v">${pre?t:'—'}</span></div>
+  <div class="prow ind"><span>Beslenme durumu</span><span class="v">${a}</span></div>
+  <div class="prow ind"><span>Hastalık şiddeti</span><span class="v">${s}</span></div>
+  <div class="prow ind thick"><span>Yaş ≥70</span><span class="v">+${age}</span></div>
+  <div class="prow"><b>Sonuç</b><span class="v"><span class="tag ${cls}">${res}</span></span></div>
+  <div class="pnote">Skor ≥3: bireysel beslenme planı. YBÜ’de NRS ≥5 yüksek risk; EN kontrendike ağır malnütrede düşük doz PN dikkatle düşünülür (ESPEN YBÜ 2023).</div>`;
+}
+function renderGLIM(){
+  const p=P();
+  if(document.activeElement!==$('#g_wl')&&$('#g_wl').dataset.touched!=='1')$('#g_wl').value=isFinite(p.wl)?p.wl.toFixed(1):'';
+  const wl=num('g_wl'),per=+$('#g_per').value;
+  const f1=isFinite(wl)&&(per===6?wl>5:wl>10);
+  const bt=p.age>=70?22:20;const f2=p.bmi<bt;
+  $('#g_f1').checked=f1;$('#g_f2').checked=f2;$('#g_f2t').textContent='(profil: '+fmt(p.bmi,1)+', eşik '+bt+')';
+  const f3=$('#g_f3').checked;
+  const pheno=f1||f2||f3,etio=$('#g_e1').checked||$('#g_e2').checked;
+  const st2=(isFinite(wl)&&(per===6?wl>10:wl>20))||p.bmi<(p.age>=70?20:18.5)||(f3&&$('#g_f3s').checked);
+  let res='Malnütrisyon tanısı yok',cls='ok',stage='—';
+  if(pheno&&etio){res='Malnütrisyon';cls=st2?'crit':'warn';stage=st2?'Evre 2 · ağır':'Evre 1 · orta';}
+  else if(pheno||etio){res='Kriterler eksik (≥1 fenotip + ≥1 etiyoloji)';cls='neu';}
+  $('#outGLIM').innerHTML=`<h3>GLIM</h3><div class="sub">≥1 fenotipik + ≥1 etiyolojik kriter</div>
+  <div class="prow big thick"><span>Tanı</span><span class="v" style="font-size:20px">${pheno&&etio?'Var':'Yok'}</span></div>
+  <div class="prow"><span>Fenotipik</span><span class="v">${[f1,f2,f3].filter(Boolean).length} / 3</span></div>
+  <div class="prow thick"><span>Etiyolojik</span><span class="v">${[$('#g_e1').checked,$('#g_e2').checked].filter(Boolean).length} / 2</span></div>
+  <div class="prow"><b>Sonuç</b><span class="v"><span class="tag ${cls}">${res}</span></span></div>
+  <div class="prow"><b>Şiddet</b><span class="v">${stage}</span></div>
+  <div class="pnote">Evre 2: kilo kaybı &gt;%10 (≤6 ay) veya &gt;%20 (&gt;6 ay); BMI &lt;18,5 (&lt;70 yaş) / &lt;20 (≥70 yaş); ağır kas kaybı. Evre 1: %5–10 / %10–20; BMI &lt;20 / &lt;22.</div>`;
+}
+function renderMNA(){
+  const p=P();let f;
+  if($('#m_f').value==='auto'){f=p.bmi<19?0:p.bmi<21?1:p.bmi<23?2:3;}else f=+$('#m_f').value;
+  const t=+$('#m_a').value + +$('#m_b').value + +$('#m_c').value + +$('#m_d').value + +$('#m_e').value + f;
+  const r=t>=12?['Normal beslenme durumu','ok']:t>=8?['Malnütrisyon riski','warn']:['Malnütre','crit'];
+  $('#outMNA').innerHTML=`<h3>MNA-SF</h3><div class="sub">0–14 puan</div>
+  <div class="prow big thick"><span>Toplam</span><span class="v">${t}</span></div>
+  <div class="prow"><span>F maddesi</span><span class="v">${f}${$('#m_f').value==='auto'?' (BMI '+fmt(p.bmi,1)+')':''}</span></div>
+  <div class="prow"><b>Sonuç</b><span class="v"><span class="tag ${r[1]}">${r[0]}</span></span></div>
+  <div class="pnote">12–14 normal · 8–11 risk · 0–7 malnütre. Tarama pozitif yaşlıda ONS ≥400 kcal ve ≥30 g protein/gün, en az 1 ay (ESPEN Geriatri 2022, A).</div>`;
+}
+
+/* ================= REQUIREMENTS ================= */
+const SET=[
+{g:'Yatan hasta',id:'pol',l:'Polimorbid hasta (<65 yaş)',e:[25,30],eTxt:'IC, denklem veya ağırlık formülü (0); 25–30 pratik aralık',p:[1.2,1.5],b:'actual',s:'pol',n:['Hesaplanan hedefin en az %75’ine ulaşılmalı (A).','Destek yatışın ilk 48 saatinde başlatılmalı (A).','CRP ≥100 mg/L ise beslenme yanıtı sınırlı olabilir (B).']},
+{g:'Yatan hasta',id:'pol65',l:'Polimorbid hasta ≥65 yaş',e:[27,27],eTxt:'≈27 kcal/kg aktüel (0)',p:[1.2,1.5],b:'actual',s:'pol',n:['REE 18–20 kcal/kg + aktivite/stres faktörü.','Hedefin en az %75’i (A).']},
+{g:'Yatan hasta',id:'polund',l:'Ağır düşük kilolu hasta',e:[30,30],eTxt:'≈30 kcal/kg aktüel (0)',p:[1.2,1.5],b:'actual',s:'pol',n:['Refeeding riski yüksek: hedefe yavaş ve kademeli ulaşın (GPP). Refeeding hesaplayıcısına bakın.']},
+{g:'Yatan hasta',id:'polckd',l:'Polimorbid + eGFR <30, RRT yok',e:[25,30],eTxt:'pratik aralık; IC tercih',p:[0.8,0.8],b:'actual',s:'pol',n:['Protein 0,8 g/kg/gün (B); eGFR ≥30 ise 1,2–1,5.']},
+{g:'Geriatri',id:'ger',l:'Yaşlı birey',e:[30,30],eTxt:'30 kcal/kg yol gösterici (B)',p:[1.0,1.5],pTxt:'≥1,0; hastalıkta 1,2–1,5 (B)',b:'actual',s:'ger',fluid:true,n:['Ağır hastalık/yaralanmada protein 2,0 g/kg’a kadar.']},
+{g:'Kritik hasta',id:'icu1',l:'YBÜ · erken akut faz (gün 1–3)',e:[14,17.5],eTxt:'20–25 kcal/kg tahminin ≤%70’i (B)',p:[1.3,1.3],pTxt:'düşük başla → kademeli 1,3 (0)',b:'actual',s:'icu',icu:'early',n:['Erken tam doz EN/PN yok; hedefe 3–7 günde (A).','IC veya VCO₂ girilirse ölçülen EE’nin ≤%70’i hesaplanır.','BMI >25 ise “Düzeltilmiş” ağırlığı seçin veya obez seçeneğini kullanın.']},
+{g:'Kritik hasta',id:'icu2',l:'YBÜ · gün 3 sonrası',e:[16,25],eTxt:'ölçülen EE’nin %80–100’ü (0); IC yoksa 20–25',p:[1.3,1.3],pTxt:'1,3 kademeli (0)',b:'actual',s:'icu',icu:'late',n:['Denklemle tahmin ediliyorsa ilk hafta <%70 (B).','Travmada 1,5–2,0 g/kg düşünülebilir.']},
+{g:'Kritik hasta',id:'icuob',l:'YBÜ · obez hasta',e:[20,25],eTxt:'IC; yoksa düzeltilmiş ağırlık (GPP)',p:[1.3,1.3],pTxt:'1,3 g/kg düzeltilmiş (GPP)',b:'abw',s:'icu',icu:'late',n:['İlk 72 saatte yine ≤%70 kuralı geçerli.','İdeal ağırlıkla hipokalorik, 2–2,5 g/kg proteinli rejimler de tartışılmaktadır.']},
+{g:'Böbrek',id:'ckd',l:'KBH, akut/kritik hastalık yok',e:[30,35],eTxt:'stres yok, düşük protein diyeti süren KBH',p:[0.6,0.8],b:'usual',s:'ren',n:['Akut hastalıkla yatışta düşük protein diyeti sürdürülmez (GPP).','Protein tercihen PCR’ye göre (GPP).']},
+{g:'Böbrek',id:'krt',l:'KBH + kronik aralıklı RRT, akut hastalık yok',e:[25,30],eTxt:'polimorbid yaklaşımı; IC tercih',p:[1.2,1.2],pTxt:'≥1,2 (0)',b:'usual',s:'ren',n:['ONS/EN yetersiz HD hastasında IDPN (A).']},
+{g:'Böbrek',id:'aki',l:'ABH / KBH zemininde ABH, akut/kritik yok',e:[25,30],eTxt:'pratik aralık; IC tercih',p:[0.8,1.0],b:'usual',s:'ren',n:['Katabolik olmayan stabil hastada ≤0,7 g/kg kısıtlı rejim düşünülebilir (GPP).']},
+{g:'Böbrek',id:'akic',l:'ABH/KBH + akut/kritik hastalık, RRT yok',e:[20,25],eTxt:'IC yoksa 20–30; YBÜ faz kuralları',p:[1.0,1.3],pTxt:'1,0 ile başla → 1,3 (0)',b:'usual',s:'ren',n:['RRT’yi geciktirmek için protein azaltılmaz (A).','Ölçülen REE’ye RRT düzeltme faktörü eklenmez (B).']},
+{g:'Böbrek',id:'irrt',l:'Kritik + aralıklı RRT',e:[20,25],eTxt:'IC yoksa 20–30; YBÜ faz kuralları',p:[1.3,1.5],b:'usual',s:'ren',n:['Sitrat/glukoz/laktat kalorilerini ekleyin (Non-nütrisyonel kalori).']},
+{g:'Böbrek',id:'crrt',l:'Kritik + CRRT / PIRRT',e:[20,25],eTxt:'IC yoksa 20–30; YBÜ faz kuralları',p:[1.5,1.7],pTxt:'1,5 → en fazla 1,7 (0)',b:'usual',s:'ren',n:['Kayıp: 10–15 g/gün amino asit + 5–10 g peptit.','Sitratlı CVVH ≈513 kcal/gün ekler.','Selenyum, çinko, bakır, C vitamini, folat, tiamin izlenmeli (B).']},
+{g:'Karaciğer',id:'cir',l:'Siroz, malnütrisyon yok',e:[30,35],eTxt:'1,3 × REE (sedanter; B)',p:[1.2,1.2],pTxt:'1,2 (B)',b:'dry',s:'liv',n:['Geç akşam atıştırmalığı ve 3–5 öğün (B).','Obez sirozda enerji artırılmaz (GPP).']},
+{g:'Karaciğer',id:'cirm',l:'Siroz, malnütre/sarkopenik',e:[30,35],eTxt:'30–35 (B)',p:[1.5,1.5],pTxt:'1,5 (B)',b:'dry',s:'liv',n:['Hepatik ensefalopatide protein kısıtlanmaz (B).','Protein intoleransında bitkisel protein veya BCAA 0,25 g/kg (B).']},
+{g:'Karaciğer',id:'cirob',l:'Obez siroz/NASH + akut hastalık',e:[25,25],eTxt:'25 kcal/kg ideal (GPP)',p:[2.0,2.5],pTxt:'2,0–2,5 g/kg ideal',b:'ibw',s:'liv',n:['Uzlaşı düzeyi sınırlı (%71).']},
+{g:'Karaciğer',id:'ash',l:'Ağır alkolik hepatit',e:[35,40],p:[1.2,1.5],b:'dry',s:'liv',n:['>12 saat açlıkta 2–3 g/kg/gün IV glukoz; >72 saat tam PN (GPP).','PN/glukozdan önce tiamin.']},
+{g:'Karaciğer',id:'ltx',l:'Karaciğer nakli / cerrahi',e:[30,35],eTxt:'pre ve akut dönem sonrası postop (GPP)',p:[1.2,1.5],b:'dry',s:'liv',n:['Obez adayda 25 kcal/kg ve 2,0–2,5 g/kg ideal ağırlık.']},
+{g:'Diğer',id:'ibda',l:'IBH · aktif hastalık',e:[25,30],eTxt:'sağlıklıya benzer; kılavuz sayı vermez',p:[1.2,1.5],pTxt:'1,2–1,5 (GPP)',b:'actual',s:'ibd',n:['Zor olguda IC + aktivite değerlendirmesi.']},
+{g:'Diğer',id:'ibdr',l:'IBH · remisyon',e:[25,30],eTxt:'sağlıklıya benzer; kılavuz sayı vermez',p:[1.0,1.0],pTxt:'≈1,0 (GPP)',b:'actual',s:'ibd',n:[]},
+{g:'Diğer',id:'can',l:'Kanser',e:[25,30],eTxt:'25–30 (güçlü)',p:[1.0,1.5],pTxt:'>1,0, mümkünse 1,5 (güçlü)',b:'actual',s:'can',n:['İnsülin direnci + kilo kaybında yağ/karbonhidrat oranını artırın.']},
+{g:'Diğer',id:'hpn',l:'Evde PN (stabil erişkin)',e:[25,30],p:[0.8,1.0],pTxt:'0,8–1,0 g/kg amino asit',b:'actual',s:'pn',n:['Soya lipiti ≤1 g/kg/gün (B).','100–150 kcal non-protein enerji / g azot.']}
+];
+function buildSet(){
+  let h='',g='';SET.forEach(s=>{if(s.g!==g){if(g)h+='</optgroup>';h+=`<optgroup label="${s.g}">`;g=s.g;}h+=`<option value="${s.id}">${esc(s.l)}</option>`;});h+='</optgroup>';
+  $('#r_set').innerHTML=h;$('#r_set').value='icu1';
+}
+const state={req:null};
+function renderReq(){
+  const p=P();const s=SET.find(x=>x.id===$('#r_set').value)||SET[0];
+  const bsel=$('#r_basis').value;const b=bsel==='auto'?s.b:bsel;const w=W(b,p);
+  const vco2=num('r_vco2'),ic=num('r_ic');
+  let ree=NaN,reeSrc='';
+  if(isFinite(ic)&&ic>0){ree=ic;reeSrc='IC';}else if(isFinite(vco2)&&vco2>0){ree=vco2*8.19;reeSrc='VCO₂ × 8,19';}
+  let eLo=s.e[0]*w,eHi=s.e[1]*w,eNote=s.eTxt||'';
+  if(isFinite(ree)){
+    if(s.icu==='early'){eLo=0.5*ree;eHi=0.7*ree;eNote='Ölçülen EE’nin ≤%70’i (B); <%50 kötü sonuçla ilişkili';}
+    else if(s.icu==='late'){eLo=0.8*ree;eHi=ree;eNote='Ölçülen EE’nin %80–100’ü (0)';}
+    else if(s.id==='cir'||s.id==='cirm'){eLo=eHi=1.3*ree;eNote='1,3 × ölçülen REE (B)';}
+    else {eLo=eHi=ree;eNote='Ölçülen REE (aktivite payı klinik karara göre)';}
+  }
+  const pLo=s.p[0]*w,pHi=s.p[1]*w;
+  const fluid=s.fluid?(p.sex==='K'?'≥1,6 L/gün':'≥2,0 L/gün'):null;
+  state.req={kcal:(eLo+eHi)/2,prot:(pLo+pHi)/2,w:w,icu:!!s.icu,set:s};
+  const bmiWarn=(p.bmi>30&&b==='actual'&&(s.g==='Kritik hasta'||s.g==='Yatan hasta'));
+  $('#outReq').innerHTML=`<h3>Günlük hedef</h3><div class="sub">${esc(s.l)}</div>
+  <div class="prow"><b>Referans ağırlık</b><span class="v">${fmt(w,1)} kg · ${BASIS[b]}</span></div>
+  ${isFinite(ree)?`<div class="prow"><span>REE (${reeSrc})</span><span class="v">${fmt(ree,0)} kcal</span></div>`:''}
+  <div class="prow big"><span>Enerji</span><span class="v">${rng(eLo,eHi,0)}</span></div>
+  <div class="prow ind"><span>kcal/gün · ${isFinite(ree)?'ölçüme göre':rng(s.e[0],s.e[1],1)+' kcal/kg'}</span><span class="v"></span></div>
+  <div class="prow big thick"><span>Protein</span><span class="v">${rng(pLo,pHi,0)}</span></div>
+  <div class="prow ind"><span>g/gün · ${s.pTxt||rng(s.p[0],s.p[1],1)+' g/kg'}</span><span class="v"></span></div>
+  ${fluid?`<div class="prow"><b>Sıvı (içecek)</b><span class="v">${fluid}</span></div>`:''}
+  <div class="prow"><span>Hedefin %75’i (alt sınır)</span><span class="v">${fmt(eLo*0.75,0)} kcal · ${fmt(pLo*0.75,0)} g</span></div>
+  <div class="pnote">${eNote?'<b>Enerji:</b> '+eNote+'. ':''}${bmiWarn?'<span class="tag warn">BMI &gt;30: düzeltilmiş ağırlık düşünün</span> ':''}<ul>${s.n.map(x=>`<li>${x}</li>`).join('')}</ul><div style="margin-top:4px">Kaynak: ${SRC[s.s]}</div></div>`;
+  renderPred(p);
+}
+function renderPred(p){
+  const hbM=66.47+13.75*p.w+5.003*p.h-6.755*p.age, hbK=655.1+9.563*p.w+1.850*p.h-4.676*p.age;
+  const mi=10*p.w+6.25*p.h-5*p.age+(p.sex==='E'?5:-161);
+  const hb=p.sex==='E'?hbM:hbK;
+  $('#tPred').innerHTML=`<thead><tr><th>Denklem</th><th>REE (kcal/gün)</th><th>Formül</th></tr></thead><tbody>
+  <tr><td>Harris-Benedict (1919)</td><td>${fmt(hb,0)}</td><td>${p.sex==='E'?'66,47 + 13,75A + 5,003B − 6,755Y':'655,1 + 9,563A + 1,850B − 4,676Y'}</td></tr>
+  <tr><td>Mifflin-St Jeor</td><td>${fmt(mi,0)}</td><td>10A + 6,25B − 5Y ${p.sex==='E'?'+ 5':'− 161'}</td></tr>
+  <tr><td>Ağırlık temelli (20 / 25 kcal/kg)</td><td>${fmt(20*p.w,0)} / ${fmt(25*p.w,0)}</td><td>A = aktüel ağırlık</td></tr></tbody>`;
+}
+
+/* ================= EN ================= */
+function renderEN(){
+  const kcal=num('e_kcal'),prot=num('e_prot'),den=num('e_den'),pgl=num('e_pgl'),hr=+$('#e_hr').value,st=num('e_start');let days=Math.round(num('e_days'));
+  if(!(days>=2))days=2;if(days>10)days=10;
+  const vol=kcal/den,rate=vol/hr,pdel=vol/1000*pgl,def=prot-pdel,icu=$('#e_icu').checked;
+  const startOk=st<=20;
+  let rows='';
+  for(let i=1;i<=days;i++){
+    let r=st+(rate-st)*(i-1)/(days-1);
+    if(icu&&i<=3)r=Math.min(r,0.7*rate);
+    r=Math.max(0,r);
+    const v=r*hr,k=v*den,pr=v/1000*pgl;
+    rows+=`<tr><td>Gün ${i}</td><td>${fmt(r,0)} mL/saat</td><td>${fmt(v,0)} mL</td><td>${fmt(k,0)} kcal</td><td>${fmt(pr,0)} g</td><td>${fmt(k/kcal*100,0)} %</td></tr>`;
+  }
+  $('#tEN').innerHTML=`<thead><tr><th>Gün</th><th>Hız</th><th>Hacim</th><th>Enerji</th><th>Protein</th><th>Hedefe oran</th></tr></thead><tbody>${rows}</tbody>`;
+  $('#outEN').innerHTML=`<h3>EN reçetesi</h3><div class="sub">${fmt(den,2)} kcal/mL · ${fmt(pgl,0)} g protein/L · ${hr} saat</div>
+  <div class="prow big"><span>Hedef hız</span><span class="v">${fmt(rate,0)}</span></div>
+  <div class="prow ind thick"><span>mL/saat</span><span class="v"></span></div>
+  <div class="prow"><b>Günlük hacim</b><span class="v">${fmt(vol,0)} mL</span></div>
+  <div class="prow"><b>Enerji</b><span class="v">${fmt(kcal,0)} kcal</span></div>
+  <div class="prow"><b>Formülden protein</b><span class="v">${fmt(pdel,0)} g</span></div>
+  <div class="prow thick"><b>Protein açığı</b><span class="v">${def>1?`<span class="tag warn">${fmt(def,0)} g</span>`:'<span class="tag ok">Yok</span>'}</span></div>
+  <div class="pnote"><ul>
+  ${def>1?'<li>Protein açığı için modüler protein veya daha yüksek protein/enerji oranlı formül; YBÜ’de protein hedefine kademeli ulaşılır.</li>':''}
+  ${!startOk?'<li><span class="tag warn">Başlangıç &gt;20 mL/saat</span> Postoperatif önerilen başlangıç 10–20 mL/saat.</li>':''}
+  <li>Hedefe ulaşma süresi: genel 5–7 gün; YBÜ’de 3–7 gün (A).</li>
+  <li>YBÜ’de sürekli infüzyon tercih edilir (B); GRV &gt;500 mL/6 saatte EN ertelenir (B).</li></ul></div>`;
+}
+
+/* ================= PN ================= */
+function renderPN(){
+  const w=num('n_w'),vol=num('n_vol'),hr=num('n_hr'),g=num('n_glu')||0,aa=num('n_aa')||0,l=num('n_lip')||0,na=num('n_na')||0,k=num('n_k')||0,lx=num('n_lipx')||0;
+  const set=$('#n_set').value,per=$('#n_route').value==='p';
+  const kG=g*3.4,kA=aa*4,kL=l*10,tot=kG+kA+kL,npc=kG+kL,N=aa/6.25,npcN=N>0?npc/N:NaN;
+  const gir=g*1000/(w*hr*60),lkg=(l+lx)/w,akg=aa/w,gkg=g/w,fatPct=npc>0?kL/npc*100:0;
+  const osm=(g*5+aa*10+l*1.5+(na+k)*2)/(vol/1000);
+  const ch=[];const add=(c,t)=>ch.push(`<li><span class="tag ${c}">${c==='ok'?'Uygun':c==='warn'?'Dikkat':'Aşıldı'}</span><span>${t}</span></li>`);
+  // GIR
+  const girMax=set==='hpn'?7:5;
+  add(gir<=girMax?'ok':gir<=girMax*1.2?'warn':'crit',`GIR ${fmt(gir,1)} mg/kg/dk · sınır ${girMax} (${set==='hpn'?'IFALD riski, KİY/PN':'YBÜ GPP'})`);
+  if(gkg<2)add('warn',`Glukoz ${fmt(gkg,1)} g/kg/gün · minimum KH ≈2 g/kg (PN 2009, B)`);
+  // lipid
+  const lMax=set==='hpn'?1.0:1.5;
+  add(lkg<=lMax?(set!=='hpn'&&lkg>1.0?'warn':'ok'):'crit',`Lipit ${fmt(lkg,2)} g/kg/gün${lx?' (non-nütrisyonel dahil)':''} · sınır ${set==='hpn'?'≤1,0 (soya bazlı, B)':'≤1,5; üst öneri 1,0 (GPP)'}`);
+  // AA
+  const aRange=set==='hpn'?[0.8,1.0]:[1.3,1.5];
+  add(akg>=aRange[0]-0.05&&akg<=aRange[1]+0.2?'ok':'warn',`Amino asit ${fmt(akg,2)} g/kg/gün · hedef ${fmt(aRange[0],1)}–${fmt(aRange[1],1)}${set==='icu'?' (YBÜ 1,3 kademeli)':''}`);
+  if(set==='hpn'){add(fatPct<=40?'ok':'crit',`Yağ:glukoz enerji ${fmt(fatPct,0)}:${fmt(100-fatPct,0)} · ≤40:60`);
+    add(npcN>=100&&npcN<=150?'ok':'warn',`NPC:N ${fmt(npcN,0)} kcal/g N · ev PN’de 100–150`);
+    const kk=tot/w;add(kk>=25&&kk<=30?'ok':'warn',`Enerji ${fmt(kk,1)} kcal/kg · ev PN’de 25–30`);}
+  if(set==='icu'){const kk=tot/w;add(kk<=25?'ok':'warn',`Enerji ${fmt(kk,1)} kcal/kg · IC yoksa 20–25; erken fazda ≤%70`);}
+  if(per)add(osm<=850?'ok':'crit',`Osmolarite ≈${fmt(osm,0)} mOsm/L · periferik ≤850 (C)`);
+  else add('ok',`Osmolarite ≈${fmt(osm,0)} mOsm/L · santral yol`);
+  $('#outPN').innerHTML=`<h3>PN analizi</h3><div class="sub">${fmt(vol,0)} mL · ${fmt(hr,0)} saat · ${fmt(w,1)} kg</div>
+  <div class="prow big"><span>Toplam enerji</span><span class="v">${fmt(tot,0)}</span></div>
+  <div class="prow ind thick"><span>kcal/gün · ${fmt(tot/w,1)} kcal/kg</span><span class="v"></span></div>
+  <div class="prow"><b>Glukoz</b><span class="v">${fmt(g,0)} g · ${fmt(kG,0)} kcal</span></div>
+  <div class="prow"><b>Amino asit</b><span class="v">${fmt(aa,0)} g · ${fmt(kA,0)} kcal</span></div>
+  <div class="prow"><b>Lipit</b><span class="v">${fmt(l,0)} g · ${fmt(kL,0)} kcal</span></div>
+  <div class="prow"><span>Non-protein enerji</span><span class="v">${fmt(npc,0)} kcal</span></div>
+  <div class="prow"><span>Azot · NPC:N</span><span class="v">${fmt(N,1)} g · ${fmt(npcN,0)}</span></div>
+  <div class="prow"><span>Hız</span><span class="v">${fmt(vol/hr,0)} mL/saat</span></div>
+  <div class="prow thick"><span>Osmolarite (tahmini)</span><span class="v">${fmt(osm,0)} mOsm/L</span></div>
+  <ul class="checks">${ch.join('')}</ul>
+  <div class="pnote">Mikrobesinler ilk günden eklenmeli; glukozdan önce tiamin. Hepsi bir arada torba (B).</div>`;
+}
+
+/* ================= REFEEDING ================= */
+function renderRF(){
+  const p=P();
+  $('#rf_a1').checked=p.bmi<16;$('#rf_b1').checked=p.bmi<18.5;$('#rf_c1').checked=p.bmi<14;
+  const A=['rf_a1','rf_a2','rf_a3','rf_a4'].some(i=>$('#'+i).checked);
+  const B=['rf_b1','rf_b2','rf_b3','rf_b4'].filter(i=>$('#'+i).checked).length;
+  const C=$('#rf_c1').checked||$('#rf_c2').checked;
+  let lvl,cls,kpk;
+  if(C){lvl='Çok yüksek risk';cls='crit';kpk=5;}else if(A||B>=2){lvl='Yüksek risk';cls='warn';kpk=10;}else{lvl='NICE kriteri yok';cls='ok';kpk=null;}
+  const tgt=state.req?state.req.kcal:NaN;
+  $('#outRF').innerHTML=`<h3>Refeeding</h3><div class="sub">NICE CG32 · aktüel ağırlık ${fmt(p.w,1)} kg</div>
+  <div class="prow"><b>Risk</b><span class="v"><span class="tag ${cls}">${lvl}</span></span></div>
+  <div class="prow big thick"><span>Başlangıç</span><span class="v">${kpk?fmt(kpk*p.w,0):'—'}</span></div>
+  <div class="prow ind"><span>${kpk?`kcal/gün · ${kpk} kcal/kg`:'Standart kademeli başlangıç'}</span><span class="v"></span></div>
+  <div class="prow"><b>Hedefe ulaşma</b><span class="v">${kpk?'4–7 gün':'3–7 gün'}</span></div>
+  ${isFinite(tgt)?`<div class="prow"><span>Hesaplanan hedef</span><span class="v">${fmt(tgt,0)} kcal</span></div>`:''}
+  <div class="prow"><b>Tiamin</b><span class="v">${kpk?'beslenmeden önce':'risk varsa'}</span></div>
+  <div class="pnote"><ul>
+  <li>Tiamin: 200–300 mg/gün (PN 2009) · acil/YBÜ yatışında 100–300 mg/gün IV (Mikrobesin 2022); risk altında 100 mg × 3 IV. B kompleks ile.</li>
+  <li>İlk hafta K, Mg, P en az günde bir (YBÜ, GPP); malnütre yaşlıda ilk 3 gün P, Mg, K, tiamin hafif eksiklikte bile replase edilir (GPP).</li>
+  <li>P &lt;0,65 mmol/L veya &gt;0,16 mmol/L düşüş: günde 2–3 ölçüm, replasman ve enerjiyi 48 saat kısıtla (B).</li>
+  <li>İlk günlerde sıvı ve sodyum yükünden kaçının; glukoz infüzyonu akut su/sodyum retansiyonu yapabilir.</li></ul></div>`;
+}
+
+/* ================= NON-NUTRITIONAL ================= */
+function renderNN(){
+  const prop=num('x_prop')||0,dc=+$('#x_dc').value,dv=num('x_dv')||0,cit=num('x_cit')||0,lac=num('x_lac')||0,pd=num('x_pd')||0,tgt=num('x_tgt');
+  const p=P();
+  const kP=prop*24*1.1,lipG=prop*24*0.1,kD=dv*dc/100*3.4,kC=cit*0.59,kL=lac*3.62,tot=kP+kD+kC+kL+pd;
+  $('#outNN').innerHTML=`<h3>Ek kaloriler</h3><div class="sub">24 saatlik tahmin</div>
+  <div class="prow big thick"><span>Toplam</span><span class="v">${fmt(tot,0)}</span></div>
+  <div class="prow"><b>Propofol</b><span class="v">${fmt(kP,0)} kcal</span></div>
+  <div class="prow ind"><span>Lipit yükü</span><span class="v">${fmt(lipG,0)} g · ${fmt(lipG/p.w,2)} g/kg</span></div>
+  <div class="prow"><b>Dekstroz</b><span class="v">${fmt(kD,0)} kcal</span></div>
+  <div class="prow"><b>Sitrat</b><span class="v">${fmt(kC,0)} kcal</span></div>
+  <div class="prow"><b>Laktat</b><span class="v">${fmt(kL,0)} kcal</span></div>
+  <div class="prow thick"><b>PD glukozu</b><span class="v">${fmt(pd,0)} kcal</span></div>
+  <div class="prow"><span>Hedefe oranı</span><span class="v">${isFinite(tgt)&&tgt>0?`<span class="tag ${tot/tgt>0.2?'warn':'neu'}">%${fmt(tot/tgt*100,0)}</span>`:'—'}</span></div>
+  <div class="pnote">Beslenme reçetesi bu miktar kadar azaltılmalı. Propofol lipiti PN analizindeki “non-nütrisyonel lipit” alanına girilmeli (toplam ≤1,5 g/kg/gün).</div>`;
+  state.lipx=lipG;
+}
+
+/* ================= SEARCH ================= */
+let INDEX=[];
+function buildIndex(){Object.keys(M).forEach(id=>(M[id].sec||[]).forEach(s=>s.r.forEach(r=>INDEX.push({id,h:s.h,t:r[0],g:r[1],s:r[2]}))));}
+function doSearch(q){
+  q=q.trim();if(q.length<2){show(location.hash.slice(1)||current==='ara'?(location.hash.slice(1)||'gereksinim'):current);return;}
+  const norm=x=>x.toLocaleLowerCase('tr-TR');const nq=norm(q);
+  const hits=INDEX.filter(x=>norm(x.t.replace(/<[^>]+>/g,'')).includes(nq)||norm(x.h).includes(nq));
+  const re=new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+  $('#araH').textContent=`“${q}” · ${hits.length} öneri`;
+  $('#araList').innerHTML=hits.slice(0,120).map(x=>`<li>${gradeBadge(x.g)}<p>${x.t.replace(re,'<mark>$1</mark>')}<span class="s">${SRC[x.s]||''} · <a href="#${x.id}">${TITLES[x.id]} › ${x.h}</a></span></p></li>`).join('')||'<li><span></span><p>Sonuç yok. Daha kısa bir terim deneyin.</p></li>';
+  $$('section.mod').forEach(s=>s.hidden=s.dataset.mod!=='ara');
+}
+
+/* ================= INIT ================= */
+renderContent();buildNav();buildSet();buildIndex();
+const saved=load('kbr_profile');if(saved)PF.forEach(id=>{if(saved[id]!=null&&saved[id]!=='')document.getElementById(id).value=saved[id];});
+function syncPNweight(){const v=state.req?state.req.w:P().w;if(document.activeElement!==$('#n_w'))$('#n_w').value=(Math.round(v*10)/10);}
+function all(){renderProfile();renderReq();renderNRS();renderGLIM();renderMNA();renderRF();renderNN();if($('#n_w').dataset.touched!=='1')syncPNweight();renderPN();renderEN();}
+document.addEventListener('input',e=>{const t=e.target;if(t.id==='q'){doSearch(t.value);return;}
+  if(t.id==='g_wl')t.dataset.touched='1';if(t.id==='n_w')t.dataset.touched='1';
+  if(t.id==='e_den'||t.id==='e_pgl')$('#e_pre').value='custom';
+  all();});
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='navSel'||t.id==='q')return;
+  if(t.id==='e_pre'&&t.value!=='custom'){const [d,pg]=t.value.split('|');$('#e_den').value=d;$('#e_pgl').value=pg;}
+  all();});
+$('#toEN').addEventListener('click',()=>{if(!state.req)return;$('#e_kcal').value=Math.round(state.req.kcal);$('#e_prot').value=Math.round(state.req.prot);$('#e_icu').checked=state.req.icu&&state.req.set.icu==='early';all();location.hash='en-plan';});
+$('#toPN').addEventListener('click',()=>{if(!state.req)return;$('#n_w').value=Math.round(state.req.w*10)/10;$('#n_w').dataset.touched='1';$('#n_set').value=state.req.set.id==='hpn'?'hpn':state.req.icu||state.req.set.g==='Kritik hasta'?'icu':'gen';if(state.lipx)$('#n_lipx').value=Math.round(state.lipx);all();location.hash='pn-analiz';});
+$('#goProf').addEventListener('click',()=>{location.hash='profil';});
+$('#ptChip').addEventListener('click',()=>{location.hash='profil';});
+document.addEventListener('submit',e=>e.preventDefault());
+/* Nefro Kons'tan aktarım: #hasta:yas=..;cins=E|K;kilo=.. (yalnızca adresin # kısmı; sunucuya gitmez) */
+function importFromHash(){
+  const h=decodeURIComponent(location.hash.slice(1));
+  if(!h.startsWith('hasta:'))return false;
+  const d={};h.slice(6).split(';').forEach(kv=>{const i=kv.indexOf('=');if(i>0)d[kv.slice(0,i)]=kv.slice(i+1);});
+  const ok=v=>/^\d+(\.\d+)?$/.test(v||'');
+  const got=[];
+  if(ok(d.yas)){$('#p_age').value=d.yas;got.push('yaş');}
+  if(d.cins==='E'||d.cins==='K'){$('#p_sex').value=d.cins;got.push('cinsiyet');}
+  if(ok(d.kilo)){$('#p_w').value=d.kilo;got.push('kilo');}
+  if(!got.length)return false;
+  $('#p_u').value='';$('#p_asc').value='0';$('#p_ed').value='0';
+  try{history.replaceState(null,'',location.pathname+location.search+'#profil');}catch(e){location.hash='profil';}
+  const n=document.createElement('div');n.className='note info';n.id='importNote';
+  n.innerHTML='<b>Nefro Kons’tan aktarıldı:</b> '+got.join(', ')+'. Boy, olağan ağırlık, asit ve ödem formda yok; lütfen bu alanları kontrol edip girin.';
+  const old=$('#importNote');if(old)old.remove();
+  $('section[data-mod="profil"] .mod-h').after(n);
+  all();show('profil');
+  return true;
+}
+window.addEventListener('hashchange',()=>{importFromHash();});
+all();
+if(!importFromHash())show(location.hash.slice(1)||'gereksinim');
+})();
+</script>
+
+<script>
+(function(){
+  if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(){var o=document.getElementById('offl');if(o)o.textContent='Çevrimdışı kullanıma hazır';}).catch(function(){});});}
+  var dp=null,btn=document.getElementById('instBtn');
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;btn.classList.add('on');});
+  btn.addEventListener('click',function(){if(!dp)return;dp.prompt();dp.userChoice.finally(function(){dp=null;btn.classList.remove('on');});});
+  window.addEventListener('appinstalled',function(){btn.classList.remove('on');});
+})();
+</script>
+</body>
+</html>
