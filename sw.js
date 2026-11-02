@@ -1,8 +1,7 @@
 /* Klinik Beslenme Rehberi — service worker */
-const CACHE = 'kbr-v1.6';
-const CORE = ['./', './index.html', './manifest.webmanifest',
-  './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png',
-  './fonts/archivo-latin-ext-wdth-normal.woff2', './fonts/archivo-latin-wdth-normal.woff2', './fonts/fonts.css', './fonts/public-sans-latin-400-normal.woff2', './fonts/public-sans-latin-500-normal.woff2', './fonts/public-sans-latin-600-normal.woff2', './fonts/public-sans-latin-700-normal.woff2', './fonts/public-sans-latin-ext-400-normal.woff2', './fonts/public-sans-latin-ext-500-normal.woff2', './fonts/public-sans-latin-ext-600-normal.woff2', './fonts/public-sans-latin-ext-700-normal.woff2'];
+const CACHE = 'kbr-v1.7';
+const CORE = ['./fonts-suite/fonts.css', './fonts-suite/atkinson-hyperlegible-mono-latin-400-normal.woff2', './fonts-suite/atkinson-hyperlegible-mono-latin-600-normal.woff2', './fonts-suite/atkinson-hyperlegible-mono-latin-ext-400-normal.woff2', './fonts-suite/atkinson-hyperlegible-mono-latin-ext-600-normal.woff2', './fonts-suite/atkinson-hyperlegible-next-latin-400-normal.woff2', './fonts-suite/atkinson-hyperlegible-next-latin-500-normal.woff2', './fonts-suite/atkinson-hyperlegible-next-latin-700-normal.woff2', './fonts-suite/atkinson-hyperlegible-next-latin-800-normal.woff2', './fonts-suite/atkinson-hyperlegible-next-latin-ext-400-normal.woff2', './fonts-suite/atkinson-hyperlegible-next-latin-ext-500-normal.woff2', './fonts-suite/atkinson-hyperlegible-next-latin-ext-700-normal.woff2', './fonts-suite/atkinson-hyperlegible-next-latin-ext-800-normal.woff2', './', './index.html', './manifest.webmanifest',
+  './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png',];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE.map(u => new Request(u, {cache: 'reload'})))).then(() => self.skipWaiting()));
