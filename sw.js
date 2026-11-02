@@ -1,7 +1,7 @@
 /* Klinik Beslenme Rehberi — service worker */
-const CACHE = 'kbr-v1.8';
+const CACHE = 'kbr-v1.9';
 const CORE = ['./fonts.css', './atkinson-hyperlegible-mono-latin-400-normal.woff2', './atkinson-hyperlegible-mono-latin-600-normal.woff2', './atkinson-hyperlegible-mono-latin-ext-400-normal.woff2', './atkinson-hyperlegible-mono-latin-ext-600-normal.woff2', './atkinson-hyperlegible-next-latin-400-normal.woff2', './atkinson-hyperlegible-next-latin-500-normal.woff2', './atkinson-hyperlegible-next-latin-700-normal.woff2', './atkinson-hyperlegible-next-latin-800-normal.woff2', './atkinson-hyperlegible-next-latin-ext-400-normal.woff2', './atkinson-hyperlegible-next-latin-ext-500-normal.woff2', './atkinson-hyperlegible-next-latin-ext-700-normal.woff2', './atkinson-hyperlegible-next-latin-ext-800-normal.woff2', './', './index.html', './manifest.webmanifest',
-  './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png',];
+  './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png','./icon.svg'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE.map(u => new Request(u, {cache: 'reload'})))).then(() => self.skipWaiting()));
