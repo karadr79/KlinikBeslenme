@@ -1423,5 +1423,29 @@ if(!importFromHash())show(location.hash.slice(1)||'anasayfa');
   window.addEventListener('appinstalled',function(){btn.classList.remove('on');});
 })();
 </script>
+<script src="disaktar.js"></script>
+<script>
+/* Dışa aktarma: PDF ve Excel (disaktar.js) */
+(function(){
+  if(!window.DA)return;
+  var prof=document.getElementById('fProfil');
+  DA.config({app:'Klinik Beslenme',file:'KlinikBeslenme',color:'#5DBE8F',fab:20,kind:'Beslenme değerlendirme raporu',patientTitle:'Hasta profili',
+    patient:function(){var r=DA.inputs(prof),o=DA.outputs(document.getElementById('outProfil'),[{sel:'.prow',l:function(e){return DA.clean(e.firstElementChild.textContent)},v:'.v'}]);return r.concat(o.results.map(function(x){return [x[0],x[1],'',x[3]]}))}});
+  var PATS=[{sel:'.prow',l:function(e){return DA.clean(e.firstElementChild.textContent)},v:'.v'}];
+  document.querySelectorAll('section.mod .calc').forEach(function(calc){
+    var panel=calc.querySelector('.panel');if(!panel||panel.id==='outProfil')return;
+    var mod=calc.closest('section.mod'),h1=mod.querySelector('.mod-h h1'),h2=null,p=calc.previousElementSibling;
+    while(p){if(p.tagName==='H2'){h2=p;break}if(p.classList.contains('calc')||p.classList.contains('mod-h'))break;p=p.previousElementSibling}
+    var title=DA.clean((h2||h1).textContent),sub=h2&&h1?DA.clean(h1.textContent):'';
+    var w=document.createElement('div');w.style.cssText='margin:-14px 0 26px';var b=DA.button();b.style.marginTop='0';w.appendChild(b);calc.after(w);
+    b.addEventListener('click',function(){
+      var o=DA.outputs(panel,PATS);
+      if(!o.results.length){DA.toast('Önce gerekli alanları doldurun');return}
+      var inp=DA.inputs(calc);
+      DA.add({title:title,sub:sub,inputs:inp,results:o.results,notes:o.notes});
+    });
+  });
+})();
+</script>
 </body>
 </html>
