@@ -236,6 +236,14 @@ img{max-width:100%}
 
 :root{--hdr:#14293D;--hdr-mute:#B5C4D1;--f-display:"Atkinson Hyperlegible Next",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--f-body:"Atkinson Hyperlegible Next",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 </style><!--/suite-head-->
+<!--hareket--><link rel="stylesheet" href="hareket.css"><style id="hareket-app">
+/* Apple-stili katman: yarı saydam üst başlık */
+.top{--hk-base:var(--hdr)}
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+.top{background:color-mix(in srgb,var(--hk-base) 88%,transparent)!important;-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}
+}
+@media (prefers-reduced-transparency:reduce),(prefers-contrast:more){ .top{background:var(--hk-base)!important;-webkit-backdrop-filter:none;backdrop-filter:none} }
+</style>
 </head>
 <body>
 <!--suite-nav--><nav class="suite" aria-label="RTEÜ Nefroloji uygulamaları"><span class="suite-org">RTEÜ Nefroloji</span><ul class="suite-apps"><li><a href="https://karadr79.github.io/nefro-kons/" style="--suite-c:#A9BCD3"><span class="sl">Konsültasyon</span><span class="ss">Konsültasyon</span></a></li><li><a href="https://karadr79.github.io/NefroHesapAraclar/" style="--suite-c:#46BDD0"><span class="sl">Hesap araçları</span><span class="ss">Hesap</span></a></li><li><a href="https://karadr79.github.io/KBHRehberi/" style="--suite-c:#7FB0E0"><span class="sl">KBH Rehberi</span><span class="ss">KBH</span></a></li><li><a href="https://karadr79.github.io/KlinikBeslenme/" style="--suite-c:#5DBE8F" aria-current="page"><span class="sl">Klinik beslenme</span><span class="ss">Beslenme</span></a></li></ul></nav><!--/suite-nav-->
@@ -1070,7 +1078,7 @@ function buildNav(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
 }
 function openSheet(){$('#sheetTiles').innerHTML=tilesHTML(current);$('#sheet').hidden=false;document.body.style.overflow='hidden';const a=$('#sheetTiles a[aria-current]');(a||$('#sheetX')).focus();}
-function closeSheet(){if($('#sheet').hidden)return;$('#sheet').hidden=true;document.body.style.overflow='';}
+function closeSheet(){const s=$('#sheet');if(s.hidden||s.dataset.hkClosing)return;const fin=()=>{s.hidden=true;document.body.style.overflow='';};if(window.Hareket)Hareket.sheetOut(s,fin);else fin();}
 let current='anasayfa';
 function show(id){
   if(!document.querySelector(`section[data-mod="${id}"]`))id='anasayfa';
@@ -1447,5 +1455,7 @@ if(!importFromHash())show(location.hash.slice(1)||'anasayfa');
   });
 })();
 </script>
+<!--hareket--><script src="hareket.js"></script>
+<script>Hareket.init({reveal:['section.mod'],sheets:[{el:'#sheet',panel:'.sheet-in',handle:'.sheet-h',close:function(){document.getElementById('sheetX').click();}}]});</script>
 </body>
 </html>
