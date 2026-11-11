@@ -1,5 +1,5 @@
 /* Klinik Beslenme Rehberi — service worker */
-const CACHE = 'kbr-v1.18';
+const CACHE = 'kbr-v1.19';
 const CORE = ['./fonts.css', './ortak.css', './ortak.js', './atkinson-hyperlegible-mono-latin-400-normal.woff2', './atkinson-hyperlegible-mono-latin-600-normal.woff2', './atkinson-hyperlegible-mono-latin-ext-400-normal.woff2', './atkinson-hyperlegible-mono-latin-ext-600-normal.woff2', './atkinson-hyperlegible-next-latin-400-normal.woff2', './atkinson-hyperlegible-next-latin-500-normal.woff2', './atkinson-hyperlegible-next-latin-700-normal.woff2', './atkinson-hyperlegible-next-latin-800-normal.woff2', './atkinson-hyperlegible-next-latin-ext-400-normal.woff2', './atkinson-hyperlegible-next-latin-ext-500-normal.woff2', './atkinson-hyperlegible-next-latin-ext-700-normal.woff2', './atkinson-hyperlegible-next-latin-ext-800-normal.woff2', './', './index.html', './manifest.webmanifest', './disaktar.js','./hareket.js','./hareket.css',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png','./icon.svg'];
 
