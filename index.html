@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="author" content="Prof. Dr. Ekrem KARA">
 <meta name="theme-color" content="#0E1F2E">
 <meta name="description" content="ESPEN kılavuzlarına dayalı erişkin klinik beslenme hesaplayıcıları ve önerileri">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -236,7 +237,9 @@ img{max-width:100%}
 
 :root{--hdr:#14293D;--hdr-mute:#B5C4D1;--f-display:"Atkinson Hyperlegible Next",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--f-body:"Atkinson Hyperlegible Next",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 </style><!--/suite-head-->
-<!--hareket--><link rel="stylesheet" href="hareket.css"><style id="hareket-app">
+<!--hareket--><link rel="stylesheet" href="hareket.css">
+<link rel="stylesheet" href="ortak.css">
+<script src="ortak.js"></script><style id="hareket-app">
 /* Apple-stili katman: yarı saydam üst başlık */
 .top{--hk-base:var(--hdr)}
 @supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
@@ -246,7 +249,7 @@ img{max-width:100%}
 </style>
 </head>
 <body>
-<!--suite-nav--><nav class="suite" aria-label="RTEÜ Nefroloji uygulamaları"><span class="suite-org">RTEÜ Nefroloji</span><ul class="suite-apps"><li><a href="https://karadr79.github.io/nefro-kons/" style="--suite-c:#A9BCD3"><span class="sl">Konsültasyon</span><span class="ss">Konsültasyon</span></a></li><li><a href="https://karadr79.github.io/NefroHesapAraclar/" style="--suite-c:#46BDD0"><span class="sl">Hesap araçları</span><span class="ss">Hesap</span></a></li><li><a href="https://karadr79.github.io/KBHRehberi/" style="--suite-c:#7FB0E0"><span class="sl">KBH Rehberi</span><span class="ss">KBH</span></a></li><li><a href="https://karadr79.github.io/NakilRehberi/" style="--suite-c:#C7A6E8"><span class="sl">Nakil Rehberi</span><span class="ss">Nakil</span></a></li><li><a href="https://karadr79.github.io/KlinikBeslenme/" style="--suite-c:#5DBE8F" aria-current="page"><span class="sl">Klinik beslenme</span><span class="ss">Beslenme</span></a></li></ul></nav><!--/suite-nav-->
+<!--suite-nav--><nav class="suite" aria-label="RTEÜ Nefroloji uygulamaları"><span class="suite-org">RTEÜ Nefroloji</span><ul class="suite-apps"><li><a href="https://karadr79.github.io/nefro-kons/" style="--suite-c:#A9BCD3"><span class="sl">Konsültasyon</span><span class="ss">Konsültasyon</span></a></li><li><a href="https://karadr79.github.io/NefroHesapAraclar/" style="--suite-c:#46BDD0"><span class="sl">Hesap araçları</span><span class="ss">Hesap</span></a></li><li><a href="https://karadr79.github.io/KBHRehberi/" style="--suite-c:#7FB0E0"><span class="sl">KBH Rehberi</span><span class="ss">KBH</span></a></li><li><a href="https://karadr79.github.io/NakilRehberi/" style="--suite-c:#C7A6E8"><span class="sl">Nakil Rehberi</span><span class="ss">Nakil</span></a></li><li><a href="https://karadr79.github.io/KlinikBeslenme/" style="--suite-c:#5DBE8F" aria-current="page"><span class="sl">Klinik beslenme</span><span class="ss">Beslenme</span></a></li><li><a href="https://karadr79.github.io/SemiyolojiRehberi/" style="--suite-c:#F2A93B"><span class="sl">Semiyoloji</span><span class="ss">Semiyoloji</span></a></li></ul></nav><!--/suite-nav-->
 
 <header class="top">
   <div class="top-in">
@@ -269,7 +272,7 @@ img{max-width:100%}
     <p class="lede">Tarama, enerji-protein hedefi, enteral ve parenteral reçete, refeeding ve organ yetmezliklerinde beslenme. 7 hesaplayıcı ve 13 rehber bölümü; öneriler kılavuzdaki dereceleriyle birlikte.</p>
     <div class="btns"><a class="b pri" href="#gereksinim">Gereksinimi hesapla</a><a class="b" href="#profil">Hasta profilini gir</a></div>
   </header>
-  <div id="homeTiles"></div>
+  <div id="rtBy"></div><div id="rtQuick" class="rt-quick"></div><div id="homeTiles"></div>
 </section>
 
 <!-- ============ PROFİL ============ -->
@@ -501,7 +504,7 @@ img{max-width:100%}
 </section>
 
 <nav class="pager" id="pager" aria-label="Önceki ve sonraki bölüm"></nav>
-<footer class="disc">Bu uygulama ESPEN kılavuzlarının (NotebookLM “Klinik Beslenme Rehberi” defterindeki 13 kaynak) özetidir; klinik karar desteği sağlar, bireysel değerlendirmenin ve kurum protokollerinin yerini almaz. Öneri dereceleri kılavuzdaki haliyle verilmiştir; doğrulanamayan derecelerde “—” kullanılmıştır. <span class="offl" id="offl"></span> · Sürüm 1.5 (Ekim 2026)</footer>
+<footer class="disc">Bu uygulama ESPEN kılavuzlarının (NotebookLM “Klinik Beslenme Rehberi” defterindeki 13 kaynak) özetidir; klinik karar desteği sağlar, bireysel değerlendirmenin ve kurum protokollerinin yerini almaz. Öneri dereceleri kılavuzdaki haliyle verilmiştir; doğrulanamayan derecelerde “—” kullanılmıştır. <span class="offl" id="offl"></span></footer><div class="rt-foot" id="rtHost"></div>
 </main>
 </div>
 
@@ -1093,6 +1096,7 @@ function show(id){
   if(i<0)pg.innerHTML='';
   else{const pv=ORDER[i-1],nx=ORDER[i+1];
     pg.innerHTML=(pv?`<a class="pv" href="#${pv}"><small>← Önceki</small><b>${TITLES[pv]}</b></a>`:'')+(nx?`<a class="nx" href="#${nx}"><small>Sonraki →</small><b>${TITLES[nx]}</b></a>`:'');}
+  if(window.RTEU){if(id!=='anasayfa'&&TITLES[id])RTEU.visit(id);rtQuick();RTEU.enter(document.querySelector(`section[data-mod="${id}"]`));}
   window.scrollTo(0,0);
 }
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h){$('#q').value='';show(h);}});
@@ -1373,6 +1377,14 @@ function doSearch(q){
 
 /* ================= INIT ================= */
 renderContent();buildNav();buildSet();buildIndex();
+function rtQuick(){const q=$('#rtQuick');if(q&&window.RTEU)q.innerHTML=RTEU.quickHTML(TITLES,id=>'#'+id);}
+if(window.RTEU){
+  RTEU.init({key:'kbr',version:'1.6',date:'11.11.2026',tools:'#rtHost',light:true,view:'#main',zoom:'#main',enter:false,reset:false,press:'.tile,#pager a,.b',cards:'.panel',tables:'.tw',outs:'.panel',outVal:'.big,.v,strong'});
+  $('#rtBy').innerHTML=RTEU.bylineHTML();
+  $$('section.mod').forEach(sec=>{const id=sec.dataset.mod;if(!TITLES[id]||id==='anasayfa'||id==='ara')return;const h=sec.querySelector('header');if(h)h.insertAdjacentHTML('beforeend',RTEU.starHTML(id));});
+  document.addEventListener('click',e=>{if(RTEU.starClick(e))rtQuick();});
+  rtQuick();
+}
 const saved=load('kbr_profile');if(saved)PF.forEach(id=>{if(saved[id]!=null&&saved[id]!=='')document.getElementById(id).value=saved[id];});
 function syncPNweight(){const v=state.req?state.req.w:P().w;if(document.activeElement!==$('#n_w'))$('#n_w').value=(Math.round(v*10)/10);}
 function all(){renderProfile();renderReq();renderNRS();renderGLIM();renderMNA();renderRF();renderNN();if($('#n_w').dataset.touched!=='1')syncPNweight();renderPN();renderEN();}
